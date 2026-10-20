@@ -1,0 +1,2 @@
+# bakemono
+Bakemono LCG
