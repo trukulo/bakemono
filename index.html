@@ -1877,66 +1877,105 @@ body.gp-on #gpBar { display: flex; }
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .pickcard .godtxt i { font-style: normal; color: var(--dim); }
 
-/* ---------- FOIL: lámina holográfica (sin barra blanca) + chapa ✦ ----------
-   Antes la lámina era UNA banda de gradiente cruzando la carta: se veía como
-   una franja recta y evidente. Ahora son cuatro capas MUY transparentes y sin
-   borde —luz de foco, nácar cónico, micro-estampado y un reflejo ancho— que se
-   desplazan a velocidades distintas (cada una con su background-size) y cuya luz
-   sigue al puntero (--fx/--fy). Al tamaño del álbum (104 px) se lee como papel
-   metalizado; a 150 px del sobre, como lámina de verdad. */
-@property --foil-drift { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
-.card.foil { --fx: 50%; --fy: 38%; --foil-angle: 115deg; --foil-drift: 0deg; }
-.card.foil img { box-shadow: 0 0 0 1px rgba(255,241,196,.62), 0 0 18px rgba(150,225,255,.34),
+/* ---------- FOIL v3: lámina holográfica serena (álbum, sobre y zoom) ----------
+   Se nota que la carta es foil de un vistazo, pero sin gritar. Tres cosas solas:
+     · ::after  = película: tinte arcoíris pastel que cubre TODA la carta en
+                  soft-light (da color de lámina sin quemar el arte) y un foco
+                  blanco suave que sigue al puntero (--fx/--fy). El tinte se
+                  desliza despacio (foilDrift, 13 s): el tono cambia sin que la
+                  vista tenga que perseguirlo.
+     · ::before = reflejo: una banda ancha de luz recorre la carta en diagonal,
+                  ida y vuelta cada 6,5 s (foilSheen, sin pausas) + grano fino
+                  metálico fijo que hace que la superficie no sea plana.
+   Antes había color-dodge, arcoíris cónico girando y destellos derivando: eso
+   lavaba el arte y mareaba. Nada de eso queda.
+   Las capas van en z-index 2 y 4, por debajo y por encima del texto (z 3), pero
+   con blend suave: la letra sigue nítida. En el zoom (470 px) el foco deriva solo
+   (foilWander) para que se vea el foil sin tocar el ratón.
+   Las cartas fuera de pantalla pausan la animación (clase .foil-live, puesta por
+   IntersectionObserver): el álbum puede tener cientos de foils y no se calienta. */
+@property --fx { syntax: '<percentage>'; inherits: true; initial-value: 50%; }
+@property --fy { syntax: '<percentage>'; inherits: true; initial-value: 38%; }
+
+:is(.card, .zoomcard).foil {
+  --fx: 50%; --fy: 38%; --foil-angle: 112deg;
+  --foil-tint: .82; --foil-sheen: .42;
+}
+.card.foil img, .zoomcard.foil img { box-shadow: 0 0 0 1px rgba(255,241,196,.62), 0 0 16px rgba(150,225,255,.26),
   0 4px 8px rgba(0,0,0,.5), 0 12px 24px rgba(0,0,0,.4); }
-/* Lámina holográfica por capas, al estilo de las cartas Pokémon de simeydotme:
-   un foco especular que sigue al puntero, un arcoíris cónico que cambia con el
-   ángulo, micro-estampado metálico y una banda de difracción. La máscara evita
-   que el color-dodge lave la ilustración; el textura de ::before añade el grano
-   de papel metalizado. */
-.card.foil::after { content: ''; position: absolute; inset: 0; border-radius: 7px; pointer-events: none; z-index: 25;
+
+/* película: tinte arcoíris pastel sobre toda la carta + foco suave del puntero */
+:is(.card, .zoomcard).foil::after { content: ''; position: absolute; inset: 0; border-radius: inherit;
+  pointer-events: none; z-index: 2;
   background-image:
-    radial-gradient(circle at var(--fx) var(--fy), rgba(255,255,255,.92) 0, rgba(255,255,255,.30) 12%, rgba(255,255,255,0) 36%),
-    repeating-linear-gradient(calc(var(--foil-angle) - 28deg), rgba(255,255,255,.20) 0 1px, rgba(255,255,255,0) 1px 5px),
-    conic-gradient(from calc(var(--foil-angle) + var(--foil-drift)) at var(--fx) var(--fy),
-      rgba(255,82,180,.78), rgba(255,170,62,.74), rgba(250,255,116,.72), rgba(82,255,176,.72),
-      rgba(70,188,255,.82), rgba(174,102,255,.76), rgba(255,82,180,.78)),
-    linear-gradient(var(--foil-angle), rgba(255,255,255,0) 16%, rgba(94,210,255,.52) 33%,
-      rgba(255,126,224,.48) 49%, rgba(112,255,206,.50) 65%, rgba(255,232,142,.54) 78%, rgba(255,255,255,0) 92%);
-  background-size: 100% 100%, 300% 300%, 180% 180%, 240% 240%;
-  background-position: 0 0, 0 0, 0 0, 0 0;
-  background-blend-mode: screen, color-dodge, color-dodge, overlay;
-  mix-blend-mode: color-dodge; opacity: .82; filter: saturate(1.55) contrast(1.06);
-  -webkit-mask-image: radial-gradient(120% 92% at var(--fx) var(--fy), #000 6%, rgba(0,0,0,.55) 50%, rgba(0,0,0,0) 88%);
-  mask-image: radial-gradient(120% 92% at var(--fx) var(--fy), #000 6%, rgba(0,0,0,.55) 50%, rgba(0,0,0,0) 88%);
-  animation: foilShimmer 12s ease-in-out infinite alternate, foilDrift 9s ease-in-out infinite alternate; }
-/* Grano y destellos: dos trenes de puntos minúsculos + micro-estampado en
-   diagonal. En soft-light se lee como metal, no como un tinte plano. */
-.card.foil::before { content: ''; position: absolute; inset: 0; border-radius: 7px; pointer-events: none; z-index: 26;
+    radial-gradient(58% 46% at var(--fx) var(--fy), rgba(255,255,255,.46), rgba(255,255,255,0) 72%),
+    linear-gradient(var(--foil-angle),
+      rgba(126,214,255,.84) 0%, rgba(148,166,255,.72) 20%, rgba(206,146,255,.63) 38%,
+      rgba(255,152,198,.57) 56%, rgba(255,214,146,.69) 74%, rgba(146,255,208,.66) 100%);
+  background-repeat: no-repeat, no-repeat;
+  background-size: 100% 100%, 235% 100%;
+  background-position: 0 0, 0% 0;
+  mix-blend-mode: soft-light;
+  opacity: var(--foil-tint);
+  filter: brightness(1.4);   /* +10 % de luminancia medido sobre la carta */
+  transition: opacity .3s ease;
+  animation: foilDrift 13s ease-in-out infinite; }
+
+@keyframes foilDrift { 0%, 100% { background-position: 0 0, 0% 0; }
+                       50%      { background-position: 0 0, 100% 0; } }
+
+/* reflejo: una banda ancha de luz va y viene despacio + grano metálico quieto */
+:is(.card, .zoomcard).foil::before { content: ''; position: absolute; inset: 0; border-radius: inherit;
+  pointer-events: none; z-index: 4;
   background-image:
-    radial-gradient(circle, rgba(255,255,255,.95) 0 .55px, rgba(255,255,255,0) 1.35px),
-    radial-gradient(circle, rgba(255,255,255,.72) 0 .45px, rgba(255,255,255,0) 1.15px),
-    repeating-linear-gradient(64deg, rgba(255,255,255,.13) 0 1px, rgba(255,255,255,0) 1px 3px);
-  background-size: 17px 13px, 29px 23px, 100% 100%;
-  background-position: 0 0, 7px 5px, 0 0;
-  mix-blend-mode: soft-light; opacity: .55; filter: contrast(1.35);
-  animation: foilSparkle 18s linear infinite; }
-@keyframes foilShimmer {
-  from { background-position: 0 0, 0 0, 0 0, 0 0; }
-  to   { background-position: 0 0, 0 0, 26% 18%, 12% 16%; }
+    linear-gradient(104deg, rgba(255,255,255,0) 40%, rgba(255,255,255,.34) 50%, rgba(255,255,255,0) 60%),
+    radial-gradient(circle, rgba(255,255,255,.38) 0 .4px, rgba(255,255,255,0) .95px);
+  background-repeat: no-repeat, repeat;
+  background-size: 235% 100%, 27px 24px;
+  background-position: -45% 0, 0 0;
+  background-blend-mode: screen, normal;
+  mix-blend-mode: screen;
+  opacity: var(--foil-sheen);
+  animation: foilSheen 6.5s ease-in-out infinite; }
+
+@keyframes foilSheen {
+  0%   { background-position: -50% 0, 0 0; }
+  50%  { background-position: 150% 0, 0 0; }
+  100% { background-position: -50% 0, 0 0; }   /* va y vuelve: nunca está quieta del todo */
 }
-@keyframes foilDrift { from { --foil-drift: -7deg; } to { --foil-drift: 9deg; } }
-@keyframes foilSparkle {
-  from { background-position: 0 0, 7px 5px, 0 0; }
-  to   { background-position: 68px -52px, -51px 40px, 9px 7px; }
+
+/* El zoom enseña la lámina a lo grande: mismo tinte, un poco más presente, y el
+   foco deriva solo (no depende del ratón, que ni siquiera está encima). */
+.zoomcard.foil { --foil-tint: .90; --foil-sheen: .48; }
+.zoomcard.foil::after { animation: foilDrift 17s ease-in-out infinite,
+  foilWander 8.5s ease-in-out infinite; }
+@keyframes foilWander {
+  0%, 100% { --fx: 36%; --fy: 32%; }
+  50%      { --fx: 64%; --fy: 58%; }
 }
+.zoombadge { position: absolute; top: 10px; left: 10px; z-index: 30; font-size: 12px; font-weight: 900;
+  padding: 2px 9px; border-radius: 99px; color: #14202A; letter-spacing: .6px;
+  background: linear-gradient(180deg, #DFFBFF, #9BE8FF); border: 1px solid #FFF3C4;
+  box-shadow: 0 0 12px rgba(160,240,255,.85); }
+
+/* animación sólo de lo que se ve: el resto queda quieto (y sin gastar pintura) */
+#colBody .card.foil:not(.foil-live)::after,
+#colBody .card.foil:not(.foil-live)::before,
+#packCards .card.foil:not(.foil-live)::after,
+#packCards .card.foil:not(.foil-live)::before { animation-play-state: paused; }
+.card.foil:hover::after { opacity: .92; }   /* el tinte sube un poco, nada más */
+
 .pslot.open .card.foil img { animation: foilReveal 1.15s cubic-bezier(.2,.9,.3,1.2) both; }
 @keyframes foilReveal {
   0% { filter: brightness(1) saturate(1); }
-  22% { filter: brightness(1.5) saturate(1.8) contrast(1.08); }
+  22% { filter: brightness(1.32) saturate(1.35); }
   100% { filter: brightness(1) saturate(1); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .card.foil::after, .card.foil::before, .pslot.open .card.foil img { animation: none; }
+  :is(.card, .zoomcard).foil::after, :is(.card, .zoomcard).foil::before,
+  .pslot.open .card.foil img { animation: none; }
+  /* sin movimiento la lámina sigue leyéndose: el reflejo se queda quieto en el centro */
+  :is(.card, .zoomcard).foil::before { background-position: 50% 0, 0 0; }
 }
 .foilbadge { position: absolute; top: 5px; left: 5px; z-index: 30; font-size: 11px; font-weight: 900;
   padding: 1px 6px; border-radius: 99px; color: #14202A; letter-spacing: .5px;
@@ -2188,7 +2227,7 @@ body.chibi .card.sel::before { background: linear-gradient(180deg, #FFD9E7, var(
   <div class="box">
     <div class="langpick"><button id="langEs" title="Español"><span class="fl fl-es"></span>ES</button><button id="langEn" title="English"><span class="fl fl-en"></span>EN</button></div>
     <h1 class="klogo" aria-label="BAKEMONO"><span>BAKEMONO</span></h1>
-    <p><span data-i="menuSub">Duelo de CHAMPIONS, GODDESSES y BAKEMONO · </span><span id="menuMode"></span><span id="menuElo"></span> · <span id="buildTag" title="versión de esta copia">build 20261021-1513</span></p>
+    <p><span data-i="menuSub">Duelo de CHAMPIONS, GODDESSES y BAKEMONO · </span><span id="menuMode"></span><span id="menuElo"></span> · <span id="buildTag" title="versión de esta copia">build 20261021-1726</span></p>
     <div class="menudeco" aria-hidden="true">
       <div class="fan fan-l"><img alt=""></div>
       <div class="menubtns">
@@ -5038,7 +5077,7 @@ function cardEl(c, { tapped, can, sel, target, onclick, cls, style, title, energ
     if (sel) d.setAttribute('aria-pressed', 'true');
     d.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); d.click(); } };
   }
-  if (!nozoom) { d.onmouseenter = () => zoom(c, energy); d.onmouseleave = hideZoom; }
+  if (!nozoom) { d.onmouseenter = () => zoom(c, energy, d); d.onmouseleave = hideZoom; }
   return d;
 }
 
@@ -5229,28 +5268,33 @@ function refreshCardTexts() {
     const fresh = cardTextOverlay(c);
     if (fresh) node.replaceWith(fresh);
   });
-  if (currentZoomCard) zoom(currentZoomCard);
+  if (currentZoomCard) zoom(currentZoomCard, undefined, null, currentZoomFoil);
 }
 
 /* ---------- zoom ---------- */
-let currentZoomCard = null;
-function zoom(c, energy) {
+let currentZoomCard = null, currentZoomFoil = false;
+function zoom(c, energy, srcEl, foil) {
   currentZoomCard = c;
+  // el zoom hereda la variante de la carta que se está mirando: una foil se
+  // amplía CON su lámina animada, no con el arte plano
+  const isFoil = typeof foil === 'boolean' ? foil : !!(srcEl && srcEl.classList.contains('foil'));
+  currentZoomFoil = isFoil;
   const z = $('zoom'); z.style.display = 'block';
   z.innerHTML = '';
-  const box = el('div', 'zoomcard');
+  const box = el('div', 'zoomcard' + (isFoil ? ' foil foil-live' : ''));
   const im = el('img'); im.src = cardImg(c); im.alt = c.name || '';
   box.appendChild(im);
   box.appendChild(cardTextOverlay(c));
+  if (isFoil) { const bd = el('span', 'zoombadge'); bd.textContent = 'FOIL ✦'; box.appendChild(bd); }
   z.appendChild(box);
 }
 function hideZoom() { currentZoomCard = null; $('zoom').style.display = 'none'; }
-function zoomAt(c, x, y) {
+function zoomAt(c, x, y, foil) {
   const z = $('zoom'), w = 470;
   x = x || innerWidth / 2; y = y || innerHeight / 2;
   z.style.left = Math.min(x + 26, innerWidth - w - 12) + 'px';
   z.style.top = Math.max(8, Math.min(y - 320, innerHeight - 670)) + 'px';
-  zoom(c);
+  zoom(c, undefined, null, foil);
 }
 document.addEventListener('mousemove', e => {
   const z = $('zoom'); if (z.style.display !== 'block') return;
@@ -5260,8 +5304,8 @@ document.addEventListener('mousemove', e => {
 });
 
 /* ---------- FOIL reactivo ----------
-   La luz de la lámina sigue al puntero: se escriben --fx/--fy en la carta y el
-   ::after del foil los usa como centro de su reflejo. Delegado en document (el
+   El foco suave de la lámina sigue al puntero: se escriben --fx/--fy en la carta
+   y el ::after del foil los usa como centro de su reflejo. Delegado en document (el
    álbum puede tener 20 cartas y el sobre 6: no se cuelga un listener por carta)
    y agrupado en un rAF para no recalcular en cada evento del ratón. */
 let foilRaf = 0, foilCard = null, foilAt = null;
@@ -5280,8 +5324,8 @@ document.addEventListener('pointermove', e => {
     const ny = (p.y - r.top) / r.height - .5;
     k.style.setProperty('--fx', ((nx + .5) * 100).toFixed(1) + '%');
     k.style.setProperty('--fy', ((ny + .5) * 100).toFixed(1) + '%');
-    // el arcoíris gira con el vector del puntero: la luz cambia de ángulo, no solo de sitio
-    k.style.setProperty('--foil-angle', (115 + nx * 54 + ny * 26).toFixed(1) + 'deg');
+    // el tinte se inclina un poco con el puntero (±11°): se mueve la luz, no gira el arcoíris
+    k.style.setProperty('--foil-angle', (112 + nx * 22 + ny * 10).toFixed(1) + 'deg');
   });
 }, { passive: true });
 // al salir de la carta la luz vuelve a su sitio (centro-alto), que es donde se ve mejor
@@ -5290,6 +5334,28 @@ for (const ev of ['pointerout', 'pointerleave']) document.addEventListener(ev, e
   if (!c || c.contains(e.relatedTarget)) return;
   c.style.removeProperty('--fx'); c.style.removeProperty('--fy'); c.style.removeProperty('--foil-angle');
 }, { passive: true });
+
+/* La lámina animada solo corre en las cartas que se ven. El álbum puede tener
+   cientos de foils: sin esto habría cientos de capas pintándose por frame.
+   IntersectionObserver enciende/apaga .foil-live al entrar y salir de pantalla. */
+let foilIO = null;
+const foilSeen = new WeakSet();
+function foilLive(root) {
+  const scope = root || document;
+  if (!scope.querySelectorAll) return;
+  const nodes = scope.querySelectorAll('.card.foil:not(.foil-live)');
+  if (!nodes.length) return;
+  if (!('IntersectionObserver' in window)) { nodes.forEach(n => n.classList.add('foil-live')); return; }
+  foilIO ??= new IntersectionObserver(es => {
+    for (const e of es) {
+      // el álbum se repinta a menudo: las cartas retiradas se sueltan aquí para
+      // que el observer no acumule nodos muertos en una sesión larga
+      if (!e.target.isConnected) { foilIO.unobserve(e.target); continue; }
+      e.target.classList.toggle('foil-live', e.isIntersecting);
+    }
+  }, { rootMargin: '140px 0px' });
+  nodes.forEach(n => { if (foilSeen.has(n)) return; foilSeen.add(n); foilIO.observe(n); });
+}
 
 /* ---------- log / banner ---------- */
 function logLine(s, cls) { if (typeof SIM !== 'undefined' && SIM.FAST) return; const d = el('div', cls); d.textContent = s; const L = $('log'); L.prepend(d); while (L.children.length > 60) L.lastChild.remove(); }
@@ -7231,6 +7297,7 @@ function colSection(title, list, foil, body) {
   shown.forEach(x => grid.appendChild(colCardCell(x, foil)));
   sec.append(h, grid);
   body.appendChild(sec);
+  foilLive(grid);
 }
 function colRenderSections(list, body) {
   if (colFilter.variant === 'basic') return colSection(T('colBasicsSection'), list, false, body);
@@ -7410,17 +7477,18 @@ function openPack(fac) {
       if (!slot.classList.contains('open')) { revealSlot(i); return; }
       const z = $('zoom');
       if (z.style.display === 'block' && currentZoomCard === x.card) hideZoom();
-      else zoomAt(x.card, ev.clientX, ev.clientY);
+      else zoomAt(x.card, ev.clientX, ev.clientY, d.foil);
     };
     slot.onkeydown = ev => {
       if (ev.key !== 'Enter' && ev.key !== ' ') return;
       ev.preventDefault();
       if (!slot.classList.contains('open')) revealSlot(i);
-      else zoomAt(x.card, innerWidth / 2, innerHeight / 2);
+      else zoomAt(x.card, innerWidth / 2, innerHeight / 2, d.foil);
     };
     box.appendChild(slot);
   });
   $('pack').classList.remove('hidden');
+  foilLive(box);
   colPaintBadge();
   try { sfx.shuffle(); } catch (e) {}
 }
