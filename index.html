@@ -1068,8 +1068,12 @@ cambia a auto). El contenido cabe by design en 1280×720+ */
   --wood3: var(--hud-fondo);
   --red: #F87171;
   --blue: #38BDF8;
-  /* Cortes: los del CCG */
-  --v: #241B33; --c: #FFFFFF; --i: #D63A2E; --n: #2F80ED; --g: #3FA34D; --f: #E8B931;
+  /* Cortes: los MISMOS de las cartas (generate.mjs FACTIONS.primary). No
+     cambiar aquí a ciegas: cada letra es una facción y este remapeo pisa al
+     :root de arriba, así que un valor bailado repinta media interfaz.
+     v=kurenai rojo · c=shirayuki blanco · i=komorebi verde · n=ryuguu azul
+     agua · g=tsukuyomi violeta · f=kaminari amarillo */
+  --v: #C8102E; --c: #FFFFFF; --i: #3FA65A; --n: #0E7C86; --g: #4B2E83; --f: #F2C230;
   --line: var(--hud-linea);
 }
 
@@ -2310,7 +2314,7 @@ body.chibi .card.sel::before { background: linear-gradient(180deg, #FFD9E7, var(
   <div class="box">
     <div class="langpick"><button id="langEs" title="Español"><span class="fl fl-es"></span>ES</button><button id="langEn" title="English"><span class="fl fl-en"></span>EN</button></div>
     <h1 class="klogo" aria-label="BAKEMONO"><span>BAKEMONO</span></h1>
-    <p><span data-i="menuSub">Duelo de CHAMPIONS, GODDESSES y BAKEMONO · </span><span id="menuMode"></span><span id="menuElo"></span> · <span id="buildTag" title="versión de esta copia">build 20261109-1421</span></p>
+    <p><span data-i="menuSub">Duelo de CHAMPIONS, GODDESSES y BAKEMONO · </span><span id="menuMode"></span><span id="menuElo"></span> · <span id="buildTag" title="versión de esta copia">build 20261109-1540</span></p>
     <div class="menudeco" aria-hidden="true">
       <div class="fan fan-l"><img alt=""></div>
       <div class="menubtns">
@@ -5838,7 +5842,7 @@ const FAC_TINT = {
   kurenai: [200, 16, 46],      // --v · KURENAI, carmesí
   shirayuki: [234, 246, 255], // --c · SHIRAYUKI, nieve
   komorebi: [63, 166, 90],   // --i · KOMOREBI, brote
-  ryuguu: [47, 128, 237],     // --n
+  ryuguu: [14, 124, 134],     // --n · RYUGUU, azul agua (el de sus cartas)
   tsukuyomi: [75, 46, 131],   // --g · TSUKUYOMI, luna
   kaminari: [242, 194, 48],     // --f · KAMINARI, tormenta
 };
