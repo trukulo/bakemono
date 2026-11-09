@@ -2186,6 +2186,8 @@ body.chibi .card.sel::before { background: linear-gradient(180deg, #FFD9E7, var(
 #net .netstatus.wait::after { content: ''; display: inline-block; width: 7px; height: 7px; margin-left: 8px; border-radius: 50%; background: var(--gold-hi); animation: netpulse 1.1s infinite; vertical-align: middle; }
 #net .netdeck { display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; margin: 12px 0 4px; font-size: 13px; opacity: .95; }
 #net .netdeck b { color: var(--gold-hi); letter-spacing: .05em; }
+#net .netrelays { text-align: center; font-size: 12px; opacity: .65; margin: 2px 0 10px; }
+#net .netrelays.bad { color: #ff8f7d; opacity: 1; font-weight: 700; }
 #net #netDuelBox { border-top: 1px solid rgba(255,255,255,.14); margin-top: 12px; padding-top: 4px; }
 @keyframes netpulse { 0%, 100% { opacity: .2; transform: scale(.8); } 50% { opacity: 1; transform: scale(1.2); } }
 </style>
@@ -2308,7 +2310,7 @@ body.chibi .card.sel::before { background: linear-gradient(180deg, #FFD9E7, var(
   <div class="box">
     <div class="langpick"><button id="langEs" title="Español"><span class="fl fl-es"></span>ES</button><button id="langEn" title="English"><span class="fl fl-en"></span>EN</button></div>
     <h1 class="klogo" aria-label="BAKEMONO"><span>BAKEMONO</span></h1>
-    <p><span data-i="menuSub">Duelo de CHAMPIONS, GODDESSES y BAKEMONO · </span><span id="menuMode"></span><span id="menuElo"></span> · <span id="buildTag" title="versión de esta copia">build 20261109-1351</span></p>
+    <p><span data-i="menuSub">Duelo de CHAMPIONS, GODDESSES y BAKEMONO · </span><span id="menuMode"></span><span id="menuElo"></span> · <span id="buildTag" title="versión de esta copia">build 20261109-1421</span></p>
     <div class="menudeco" aria-hidden="true">
       <div class="fan fan-l"><img alt=""></div>
       <div class="menubtns">
@@ -2379,7 +2381,11 @@ body.chibi .card.sel::before { background: linear-gradient(180deg, #FFD9E7, var(
     </div>
 
     <p class="netstatus" id="netStatus" aria-live="polite"></p>
-    <div class="actions"><button id="btnNetClose" data-i="netClose">Salir</button></div>
+    <p class="netrelays" id="netRelays"></p>
+    <div class="actions">
+      <button id="btnNetRetry" class="hidden" data-i="netRetry">🔄 Reintentar</button>
+      <button id="btnNetClose" data-i="netClose">Salir</button>
+    </div>
   </div>
 </div>
 
@@ -3087,6 +3093,9 @@ unitChoiceTitle: 'Elige una unidad para descartar',
     netCopyCode: '📋 Copiar código', netCopyLink: '🔗 Copiar enlace',
     netJoinHint: 'Código de la sala (4 caracteres):', netConnect: 'Conectar', netClose: 'Salir',
     netWaiting: 'Esperando rival…', netPeerJoined: 'Rival conectado ✓', netPeerLeft: 'El rival se ha desconectado.',
+    netRetry: '🔄 Reintentar', netRelays: 'Relays {n}/{t} conectados',
+    netJoinFail: 'Tu red no deja abrir la conexión con el rival (firewall). Probad los dos en la misma red, o quitad el bloqueador.',
+    netNoRelays: 'Sin conexión a los relays: revisa la red o el bloqueador de anuncios',
     netLive: 'Rival conectado ✓ · ida y vuelta {n} ms', netCopied: 'Copiado ✓',
     netDeckLbl: 'Tu mazo:', netDeckBtn: '🎴 Elegir mazo', netStart: '▶ Empezar duelo',
     netOnlineNote: 'Online: dos facciones cada uno y sin mulligan.',
@@ -3485,6 +3494,9 @@ tut: [
     netCopyCode: '📋 Copy code', netCopyLink: '🔗 Copy link',
     netJoinHint: 'Room code (4 characters):', netConnect: 'Connect', netClose: 'Leave',
     netWaiting: 'Waiting for rival…', netPeerJoined: 'Rival connected ✓', netPeerLeft: 'The rival left.',
+    netRetry: '🔄 Retry', netRelays: 'Relays {n}/{t} connected',
+    netJoinFail: 'Your network blocks the direct connection to the rival (firewall). Try both on the same network, or turn off the blocker.',
+    netNoRelays: 'No relay connection: check your network or ad blocker',
     netLive: 'Rival connected ✓ · round-trip {n} ms', netCopied: 'Copied ✓',
     netDeckLbl: 'Your deck:', netDeckBtn: '🎴 Pick deck', netStart: '▶ Start duel',
     netOnlineNote: 'Online: two factions each, no mulligan.',
@@ -7252,6 +7264,7 @@ async function netOpen(role, code) {
   NET.role = role; NET.code = code;
   $('netCode').textContent = code;
   $('netCodeInput').value = code;            // el invitado ve el código que ha usado
+  $('netRelays').textContent = '';
   $('netCreateBox').classList.toggle('hidden', role !== 'host');
   $('netJoinBox').classList.toggle('hidden', role !== 'guest');
   $('netSub').textContent = T(role === 'host' ? 'netSubCreate' : 'netSubJoin');
@@ -7278,7 +7291,16 @@ async function netJoinNow(role, code) {
     return;
   }
   if (NET.code !== code) return;          // se cerró la sala mientras cargaba el módulo
-  const room = NET.lib.joinRoom({ appId: NET_APP, relayConfig: { urls: NET_RELAYS } }, 'bk-' + code);
+  // El tercer argumento son avisos de Trystero: el importante es onJoinError, que
+  // salta cuando nos ve el rival pero la conexión directa NO se abre (firewall
+  // estricto, NAT simétrico). Sin esto la sala se quedaría en «esperando rival»
+  // sin explicar por qué.
+  const room = NET.lib.joinRoom({ appId: NET_APP, relayConfig: { urls: NET_RELAYS } }, 'bk-' + code, {
+    onJoinError: d => {
+      netTrace('join-error', (d && d.error && d.error.message) || '');
+      netSay(T('netJoinFail'), 'err');
+    },
+  });
   NET.room = room;
   DUEL.host = role === 'host';
   // canales del duelo: meta (lobby/empezar/final), act (jugadas del invitado),
@@ -7297,6 +7319,7 @@ async function netJoinNow(role, code) {
     if (!NET.peers.includes(id)) NET.peers.push(id);
     if (NET.retry) { clearTimeout(NET.retry); NET.retry = null; }
     netSay(T('netPeerJoined'), 'ok');
+    netShowDuelBox();                       // el botón de reintentar desaparece al haber rival
     netHello();
   };
   room.onPeerLeave = id => {
@@ -7311,12 +7334,18 @@ async function netJoinNow(role, code) {
   // latencia: prueba de que el canal está abierto en los dos sentidos
   NET.timer = setInterval(() => {
     if (NET.room && NET.peers.length && NET.ping) NET.ping({ t: performance.now() });
+    netRelayHealth();
   }, 1500);
-  NET.retry = setTimeout(() => {
-    if (!NET.role || NET.code !== code || NET.peers.length || netTries >= 8) return;
+  // reenganche al anuncio: si el rival tarda (o su anuncio se perdió mientras
+  // todavía no escuchábamos) se vuelve a entrar cada 8 s, SIN límite. Antes se
+  // rendía a los 96 s y la sala se quedaba en «esperando rival» para siempre.
+  const reintento = () => {
+    NET.retry = null;
+    if (!NET.role || NET.code !== code || NET.peers.length) return;
     netTries++;
     netJoinNow(role, code);
-  }, 12000);
+  };
+  NET.retry = setTimeout(reintento, 8000);
 }
 function netConnectFromInput() {
   const code = ($('netCodeInput').value || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 4);
@@ -7426,7 +7455,29 @@ function netShowDuelBox() {
   netDeckLabel();
   $('netDuelBox').classList.remove('hidden');
   $('btnNetStart').classList.toggle('hidden', !(DUEL.host && NET.peers.length));
+  // «Reintentar» solo mientras se espera al rival: sirve para forzar el anuncio
+  // sin cerrar la sala ni perder el código.
+  $('btnNetRetry').classList.toggle('hidden', !NET.role || !!NET.peers.length || DUEL.on);
 }
+/* salud de la señalización: cuántos relays tienen el socket abierto. Si son 0
+   el problema es la red del jugador (o un bloqueador), no el otro navegador. */
+function netRelayHealth() {
+  const n = $('netRelays');
+  if (!n) return;
+  let socks = null;
+  try { socks = NET.lib && NET.lib.getRelaySockets ? NET.lib.getRelaySockets() : null; } catch (e) { }
+  if (!socks) { n.textContent = ''; return; }
+  const total = Object.keys(socks).length;
+  const up = Object.values(socks).filter(s => s && s.readyState === 1).length;
+  n.className = 'netrelays' + (up ? '' : ' bad');
+  n.textContent = up ? fmtT(T('netRelays'), { n: up, t: total }) : T('netNoRelays');
+}
+$('btnNetRetry').onclick = () => {
+  if (!NET.role || !NET.code || DUEL.on) return;
+  netTries = 0;
+  netSay(T('netWaiting'), 'wait');
+  netJoinNow(NET.role, NET.code);
+};
 function netBackToLobby() {
   if (G && G.netDuel) return;                 // no se toca el lobby en mitad de un duelo
   $('setup').classList.add('hidden');
