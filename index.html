@@ -2184,6 +2184,9 @@ body.chibi .card.sel::before { background: linear-gradient(180deg, #FFD9E7, var(
 #net .netstatus.err { color: #ff8f7d; font-weight: 700; }
 #net .netstatus.wait { opacity: .85; }
 #net .netstatus.wait::after { content: ''; display: inline-block; width: 7px; height: 7px; margin-left: 8px; border-radius: 50%; background: var(--gold-hi); animation: netpulse 1.1s infinite; vertical-align: middle; }
+#net .netdeck { display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; margin: 12px 0 4px; font-size: 13px; opacity: .95; }
+#net .netdeck b { color: var(--gold-hi); letter-spacing: .05em; }
+#net #netDuelBox { border-top: 1px solid rgba(255,255,255,.14); margin-top: 12px; padding-top: 4px; }
 @keyframes netpulse { 0%, 100% { opacity: .2; transform: scale(.8); } 50% { opacity: 1; transform: scale(1.2); } }
 </style>
 <style>@font-face{font-family:'BakemonoUI';font-style:normal;font-weight:500;font-display:swap;src:url(data:font/woff2;base64,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) format('woff2');}
@@ -2305,7 +2308,7 @@ body.chibi .card.sel::before { background: linear-gradient(180deg, #FFD9E7, var(
   <div class="box">
     <div class="langpick"><button id="langEs" title="Español"><span class="fl fl-es"></span>ES</button><button id="langEn" title="English"><span class="fl fl-en"></span>EN</button></div>
     <h1 class="klogo" aria-label="BAKEMONO"><span>BAKEMONO</span></h1>
-    <p><span data-i="menuSub">Duelo de CHAMPIONS, GODDESSES y BAKEMONO · </span><span id="menuMode"></span><span id="menuElo"></span> · <span id="buildTag" title="versión de esta copia">build 20261109-1115</span></p>
+    <p><span data-i="menuSub">Duelo de CHAMPIONS, GODDESSES y BAKEMONO · </span><span id="menuMode"></span><span id="menuElo"></span> · <span id="buildTag" title="versión de esta copia">build 20261109-1351</span></p>
     <div class="menudeco" aria-hidden="true">
       <div class="fan fan-l"><img alt=""></div>
       <div class="menubtns">
@@ -2364,6 +2367,15 @@ body.chibi .card.sel::before { background: linear-gradient(180deg, #FFD9E7, var(
         <input class="netinput" id="netCodeInput" maxlength="4" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="????" aria-label="Código de sala">
       </div>
       <div class="netrow"><button class="primary" id="btnNetConnect" data-i="netConnect">Conectar</button></div>
+    </div>
+
+    <div id="netDuelBox" class="hidden">
+      <div class="netdeck"><span data-i="netDeckLbl">Tu mazo:</span> <b id="netDeck">—</b></div>
+      <div class="netrow">
+        <button id="btnNetDeck" data-i="netDeckBtn">🎴 Elegir mazo</button>
+        <button id="btnNetStart" class="primary hidden" data-i="netStart">▶ Empezar duelo</button>
+      </div>
+      <p class="nethint" data-i="netOnlineNote">Online: dos facciones cada uno, sin mulligan.</p>
     </div>
 
     <p class="netstatus" id="netStatus" aria-live="polite"></p>
@@ -3076,6 +3088,12 @@ unitChoiceTitle: 'Elige una unidad para descartar',
     netJoinHint: 'Código de la sala (4 caracteres):', netConnect: 'Conectar', netClose: 'Salir',
     netWaiting: 'Esperando rival…', netPeerJoined: 'Rival conectado ✓', netPeerLeft: 'El rival se ha desconectado.',
     netLive: 'Rival conectado ✓ · ida y vuelta {n} ms', netCopied: 'Copiado ✓',
+    netDeckLbl: 'Tu mazo:', netDeckBtn: '🎴 Elegir mazo', netStart: '▶ Empezar duelo',
+    netOnlineNote: 'Online: dos facciones cada uno y sin mulligan.',
+    netPeerReady: '¡Tu amigo está dentro! Elige mazo y pulsa empezar.', netWaitHost: 'Esperando a que el anfitrión empiece…',
+    netNoPicks: 'Elige dos facciones para tu mazo.', netDuelOn: '¡Duelo en marcha!', netYouHost: 'Tú eres el anfitrión.',
+    netEndWin: '¡Has ganado!', netEndLose: 'Has perdido.', netEndDraw: 'Empate.',
+    netLeftDuel: 'El rival se ha desconectado. El duelo se queda aquí.',
     netBadCode: 'El código son 4 letras o números.',
     netNoFile: 'El duelo online necesita la página servida (GitHub Pages): desde el archivo suelto el navegador bloquea la conexión.',
     netNoLib: 'No se pudo cargar el módulo de red. ¿Sin internet?',
@@ -3468,6 +3486,12 @@ tut: [
     netJoinHint: 'Room code (4 characters):', netConnect: 'Connect', netClose: 'Leave',
     netWaiting: 'Waiting for rival…', netPeerJoined: 'Rival connected ✓', netPeerLeft: 'The rival left.',
     netLive: 'Rival connected ✓ · round-trip {n} ms', netCopied: 'Copied ✓',
+    netDeckLbl: 'Your deck:', netDeckBtn: '🎴 Pick deck', netStart: '▶ Start duel',
+    netOnlineNote: 'Online: two factions each, no mulligan.',
+    netPeerReady: 'Your friend is in! Pick a deck and hit start.', netWaitHost: 'Waiting for the host to start…',
+    netNoPicks: 'Pick two factions for your deck.', netDuelOn: 'Duel on!', netYouHost: 'You are the host.',
+    netEndWin: 'You win!', netEndLose: 'You lost.', netEndDraw: 'Draw.',
+    netLeftDuel: 'The rival disconnected. The duel stops here.',
     netBadCode: 'The code is 4 letters or digits.',
     netNoFile: 'Online duels need the page served (GitHub Pages): from a local file the browser blocks the connection.',
     netNoLib: 'Could not load the networking module. No internet?',
@@ -4253,8 +4277,11 @@ function fillEndCards() {
   host.classList.remove('hidden');
 }
 
-function newGame(mine, opp, persona, spec) {
+function newGame(mine, opp, persona, spec, net) {
   // spec: { topId, botId } — espectador/campeonato: dos CPUs jugando (top arriba, bot abajo)
+  // net: duelo online — el rival de arriba lo lleva un amigo en otro navegador
+  // (`G.netDuel`); el motor es el mismo, pero no hay mulligan ni turnos alternos
+  // y el turno del rival lo conduce netOppTurn() en vez de la IA.
   // Todo lo que vive fuera de G se limpia aquí: si no, la partida anterior deja
   // un atacante marcado, un piloto pendiente de montar o un modal de elección
   // abierto. choiceSerial++ invalida el modal: su promesa queda aparcada y el
@@ -4273,7 +4300,7 @@ function newGame(mine, opp, persona, spec) {
     // Espectador y liga siempre usan turnos completos para no romper sus bucles.
     // KIRETSU/BAKEMONO: el espectador también puede jugar a turnos alternos.
     // Las ligas y el simulador rápido siguen forzando completos salvo que lo pidan.
-    turnsMode: (specMode
+    turnsMode: net ? 'full' : (specMode
       ? ((spec?.turns ?? SETTINGS.turns) === 'alternate' ? 'alternate' : 'full')
       : ((typeof SIM !== 'undefined' && SIM.FAST) ? 'full' : (SETTINGS.turns === 'alternate' ? 'alternate' : 'full'))),
     startEnergy: specMode ? 1 : (SETTINGS.startEnergy === 2 ? 2 : 1),
@@ -4293,7 +4320,7 @@ function newGame(mine, opp, persona, spec) {
     const m = cpuCfg(pid).mull;
     return m === 'smart' ? P.hand.filter(c => c.cost <= 2).length < 2 : (m > 0 && rng() < m);
   };
-  for (const [pid, P] of specMode ? [[spec.botId, G.P], [spec.topId, G.O]] : [[persona, G.O]]) {
+  for (const [pid, P] of net ? [] : (specMode ? [[spec.botId, G.P], [spec.topId, G.O]] : [[persona, G.O]])) {
     if (mullDo(pid, P)) {
       P.lib = shuf([...P.lib, ...P.hand]); P.hand = [];
       for (let i = 0; i < OPENING_HAND; i++) P.hand.push(P.lib.pop());
@@ -4305,6 +4332,7 @@ function newGame(mine, opp, persona, spec) {
   if (specMode) logLine(fmtT(T('specHdr'), { b: PERSONAS[spec.botId].name, bf: fl(opp[0]) + ' + ' + fl(opp[1]), t: PERSONAS[spec.topId].name, tf: fl(mine[0]) + ' + ' + fl(mine[1]) }), 'hl');
   else logLine(fmtT(T('gameHdr'), { mf: fl(mine[0]) + ' + ' + fl(mine[1]), o: PERSONAS[persona].name, of: fl(opp[0]) + ' + ' + fl(opp[1]) }), 'hl');
   if (specMode) startSpecMatch();
+  else if (net) netDuelBegin();   // duelo online: reparto de iniciativa y a jugar
   else { $('handzone').querySelector('.zone-label').textContent = T('handLbl'); showMulligan(); }
 }
 
@@ -4985,6 +5013,7 @@ function openSetupFromMenu() {
   $('setup').classList.remove('hidden');
 }
 function returnToMainMenu() {
+  if (DUEL.on) netReset();   // salir de un duelo online cierra también la sala
   G = null;
   G_after = null;
   ['setup', 'mull', 'reroll', 'react', 'pile', 'choice', 'help', 'champ', 'liga', 'end', 'stats', 'statsColors', 'sets', 'tut',
@@ -6281,6 +6310,7 @@ function startMyTurn() {
   render();
 }
 async function playerPlay(c) {
+  if (netGuest()) { netGuestPlay(c); return; }
   if (G.busy || !esFaseMia() || !canAttemptPlay(G.P, c)) return;
   if (c.type === 'PILOT' && units(G.P).some(u => u.card.type === 'MECH' && !u.pilot)) {
     if (pendingPilot === c) pendingPilot = null; // clic de nuevo = cancelar
@@ -6302,6 +6332,7 @@ async function playerPlay(c) {
   if (placed && altMyTurn()) altContinue();
 }
 function mountPilot(u) {
+  if (netGuest()) { if (pendingPilot && u.card.type === 'MECH' && !u.pilot) netAct({ k: 'mount', u: u.card.__u }); return; }
   if (!pendingPilot || u.card.type !== 'MECH' || u.pilot) return;
   const placed = deployUnit(G.P, pendingPilot, G.O, u);
   pendingPilot = null;
@@ -6309,6 +6340,7 @@ function mountPilot(u) {
   if (placed && altMyTurn()) altContinue();
 }
 function toAttackPhase() {
+  if (netGuest()) { netAct({ k: 'phase' }); return; }
   if (G.turnsMode === 'alternate') return; // en alternos se ataca directamente con cada unidad
   if (G.busy || !esFaseMia()) return;
   pendingPilot = null;
@@ -6354,9 +6386,12 @@ function cpuChameleonType(P, u, E) {
   return score('SWORD') >= score('MAGIC') ? 'SWORD' : 'MAGIC';
 }
 async function selectAttacker(u) {
+  if (netGuest()) { if (G && !G.busy) netAct({ k: 'attack', u: u.card.__u }); return; }
   const alt = altMyTurn();
   if ((G.phase !== 'myAttack' && !alt) || !u) return;
-  if (alt && G.busy) return;
+  // un clic a mitad de una tirada no puede encadenar dos ataques: el segundo
+  // pisaría `attacker` y dejaría la mesa esperando un bloqueo que ya pasó
+  if (G.busy) return;
   if (alt && !altCanAttack(u, G.P, G.O)) { logLine(T('noTarget')); return; }
   attacker = u; render();
   let tipo = atkTypeOf(u.card);
@@ -6369,7 +6404,12 @@ async function selectAttacker(u) {
   // sin defensa legal: el ǧnico destino es la fama (si ya encaj�� un golpe este
   // turno, el ataque no hace da��o y pasa el turno, como en SuperPop)
   if (!valid.length) { resolveMyAttack(null); return; }
-  resolveMyAttack(cpuDefender(G.O, valid, u));
+  // SUPERPOP: el que se come el golpe lo elige el DEFENSOR. Si defiende un amigo
+  // por red, la carta la elige él desde su navegador (netDefenderPick).
+  netTrace('ataca', u.card.name, 'valid=' + valid.map(x => x.card.name).join('/'));
+  const blocker = G.netDuel ? await netDefenderPick(valid, u) : cpuDefender(G.O, valid, u);
+  netTrace('bloqueo elegido', blocker && blocker.card.name);
+  resolveMyAttack(blocker);
 }
 async function triggerRevenge(ownerP, unit, foeP, srcNode) {
   if (!ownerP || !foeP || !unit || !has(unit, 'REVENGE')) return false;
@@ -6433,11 +6473,21 @@ async function resolveUnitCombat(attacker, attackerP, aDet, target, defenderP, r
     burnCountdown(attackerP, attacker);
   }
 }
-async function resolveMyAttack(targetUnit) {
-  const alt = altMyTurn();
-  if (!attacker || G.busy || (G.phase !== 'myAttack' && !alt)) return;
-  if (!targetUnit && !livesOpen(G.O)) {
-    if (G.O.lifeLostThisTurn) logLine(attacker.card.name + T('noEffect'));
+/* Resolución de un ataque. `side` dice QUIÉN ataca: 'P' (abajo, el jugador de
+   este navegador) u 'O' (arriba). En un duelo online 'O' es el amigo y este
+   mismo código corre en el navegador del anfitrión, así que las dos mesas ven
+   las mismas tiradas, el mismo INTERCEPT y la misma vida caer. */
+async function resolveMyAttack(targetUnit, side = 'P') {
+  if (netGuest()) return;                 // el invitado no resuelve: pide la acción
+  const alt = side === 'P' && altMyTurn();
+  const A = side === 'P' ? G.P : G.O;     // atacante
+  const D = side === 'P' ? G.O : G.P;     // defensor
+  const aPre = side === 'P' ? 'my' : 'opp', dPre = side === 'P' ? 'opp' : 'my';
+  const okPhase = side === 'P' ? (G.phase === 'myAttack' || alt) : (G.phase === 'aiTurn');
+  if (!attacker || G.busy || !okPhase) return;
+  if (!targetUnit && !livesOpen(D)) {
+    if (D.lifeLostThisTurn) logLine(attacker.card.name + T('noEffect'));
+    attacker = null;                      // no se queda nadie "a medio atacar"
     render(); return;
   }
   const myU = attacker;
@@ -6445,22 +6495,27 @@ async function resolveMyAttack(targetUnit) {
   // así que también cuenta si el rival lo intercepta o si la vida aguanta la tirada.
   // Las vidas atacadas se giran en el acto (y se enderezan al empezar su turno).
   const atLives = !targetUnit;
-  if (atLives) tapLives(G.O);
+  if (atLives) tapLives(D);
   G.busy = true;
   myU.tapped = true; // una unidad se gira en el instante en que empieza su ataque
   render(); // el giro debe verse mientras se resuelve el combate, no al final
+  netTrace('resolve', side, myU.card.name, 'def=' + (targetUnit && targetUnit.card.name));
   try {
     const aDet = rollCombinedD(myU.card, myU.pilot, 'atk');
-    aplicarAuras(aDet, G.P, myU, 'atk');
+    aplicarAuras(aDet, A, myU, 'atk');
     if (has(myU, 'COUNTDOWN')) addRollBonus(aDet, 3, 'COUNTDOWN');
-    banner(fmtT(T('atkBanner'), { c: myU.card.name }), false);
-    await maybeRerollAfterDisplay(slotCard('my', G.P.battle, myU), aDet, G.P, unitLabel(myU), 'atk');
-    triggerMaxRoll(G.P, G.O, myU, aDet); // PERFECT / SURGE / INTIMIDATE: cara tope del dado de ataque
+    banner(fmtT(T('atkBanner'), { c: myU.card.name }), side === 'O');
+    await maybeRerollAfterDisplay(slotCard(aPre, A.battle, myU), aDet, A, unitLabel(myU), 'atk');
+    triggerMaxRoll(A, D, myU, aDet); // PERFECT / SURGE / INTIMIDATE: cara tope del dado de ataque
     await sleep(750);
 
     let reaction = null;
     if (targetUnit || atLives) {
-      reaction = chooseCpuIntercept(G.O, targetUnit);
+      // el INTERCEPT es del DEFENSOR: si defiende el amigo, lo decide él
+      reaction = side === 'P'
+        ? (G.netDuel ? await netInterceptPick(D, myU, targetUnit) : chooseCpuIntercept(D, targetUnit))
+        : await netHumanIntercept(D, myU, targetUnit);
+      netTrace('intercept', reaction ? reaction.card.name : 'no');
       if (reaction) {
         targetUnit = reaction.unit;
         logLine(fmtT(T('interceptLog'), { c: reaction.card.name }), 'bad');
@@ -6469,31 +6524,32 @@ async function resolveMyAttack(targetUnit) {
     }
 
     if (targetUnit) {
-      await resolveUnitCombat(myU, G.P, aDet, targetUnit, G.O, reaction);
+      netTrace('combate');
+      await resolveUnitCombat(myU, A, aDet, targetUnit, D, reaction);
+      netTrace('combate fin');
     } else {
-      const li = G.O.lives.filter(l => l.lifeCard).length;
-      if (li === 0) logLine(T('oppNoLives'));
+      const li = D.lives.filter(l => l.lifeCard).length;
+      if (li === 0) logLine(D === G.P ? T('oppNoLives') : fmtT(T('zeroLog'), { p: D.name }));
       else {
-        const topLife = G.O.lives.find(l => l.lifeCard);
         // las vidas ya se giraron al declarar el ataque (intento gastado)
-        const dieStr = ladderVidas(li, G.O)[0];
-        const atkP = aDet.rollShown ? Promise.resolve() : floatDie(slotCard('my', G.P.battle, myU), aDet, 'atk');
-        await flyAttack(slotCard('my', G.P.battle, myU), topLifeNode('opp'), myU.pilot);
+        const dieStr = ladderVidas(li, D)[0];
+        const atkP = aDet.rollShown ? Promise.resolve() : floatDie(slotCard(aPre, A.battle, myU), aDet, 'atk');
+        await flyAttack(slotCard(aPre, A.battle, myU), topLifeNode(dPre), myU.pilot);
         await atkP;
-        const rDet = rollDieStrD(dieStr, 'def', tintOf({ faction: G.O.facs?.[0] }));
-        addRollBonus(rDet, units(G.O).some(x => has(x, 'GUARDIAN')) ? 1 : 0, 'GUARDIAN'); // LCG: GUARDIAN no se acumula (máx +1)
+        const rDet = rollDieStrD(dieStr, 'def', tintOf({ faction: D.facs?.[0] }));
+        addRollBonus(rDet, units(D).some(x => has(x, 'GUARDIAN')) ? 1 : 0, 'GUARDIAN'); // LCG: GUARDIAN no se acumula (máx +1)
         const roll = rDet.kept;
-        await floatDie(topLifeNode('opp'), rDet, 'lifeRoll');
+        await floatDie(topLifeNode(dPre), rDet, 'lifeRoll');
         await sleep(250);
-        shakeNode(topLifeNode('opp'));
-        if (aDet.kept > roll) destroyLife(G.O, G.P, myU.card.name, dieStr.toUpperCase(), roll, aDet.kept);   // empate: aguanta la vida
-        else logLine(myU.card.name + ' ' + aDet.kept + fmtT(T('lifeResists'), { d: dieStr.toUpperCase(), r: roll }));
-        burnCountdown(G.P, myU);
+        shakeNode(topLifeNode(dPre));
+        if (aDet.kept > roll) destroyLife(D, A, myU.card.name, dieStr.toUpperCase(), roll, aDet.kept);   // empate: aguanta la vida
+        else logLine(myU.card.name + ' ' + aDet.kept + fmtT(T('lifeResists'), { d: dieStr.toUpperCase(), r: roll }), D === G.P ? 'good' : '');
+        burnCountdown(A, myU);
       }
     }
     await sleep(600);
     for (const P of [G.P, G.O]) P.battle = P.battle.filter(u => !u.dead);
-  } finally { myU.attackType = null; attacker = null; G.busy = false; }
+  } finally { myU.attackType = null; attacker = null; G.busy = false; netTrace('resolve fin'); }
   render(); // el ataque ya se resolvió: la ficha pasa al otro jugador
   if (alt && G && !G.over) finishAltAction('P');
 }
@@ -6552,6 +6608,7 @@ function destroyLife(P, attackerPlayer, attackerName, dieLabel, roll, aVal) {
 }
 
 async function endMyTurn() {
+  if (netGuest()) { netAct({ k: 'end' }); return; }
   if (G.over || G.busy) return;
   if (G.turnsMode === 'alternate' && G.phase === 'altTurn') { altPass(); return; }
   // TURNO COMPLETO: si queda alguna unidad preparada con ataque legal, no se
@@ -6575,7 +6632,7 @@ async function endMyTurn() {
 }
 
 /* ---------- turno de la IA (motor genérico: sirve para el rival y para el espectador) ---------- */
-async function aiTurn() { return aiTurnFor(G.O, G.P); }
+async function aiTurn() { return (G && G.netDuel ? netOppTurn() : aiTurnFor(G.O, G.P)); }
 async function aiTurnFor(att, dfn, pid, opts = {}) { // pid = personalidad del que juega este turno
   if (!G || G.over) return;
   const alt = !!opts.alt && G.turnsMode === 'alternate';
@@ -6899,6 +6956,7 @@ function checkEnd() {
   if (deadP) return showEnd(T('endLoseT'), T('endLose'));
 }
 function showEnd(t, s) {
+  if (G && G.netDuel && !DUEL.sentEnd) netTellEnd(t); // el invitado ve el mismo final
   G.over = true;
   let vsHtml = null;
   if (typeof SIM !== 'undefined' && SIM.FAST && !G.spec) return; // simulación sin UI
@@ -7124,12 +7182,21 @@ const NET_APP = 'com.bakemono.duel.c1';
 // propia se usan tal cual, así que aquí van los que respondían ese día a un
 // REQ de prueba. Si algún día el duelo deja de encontrar rivales, esto es lo
 // primero que hay que revisar: sustituir por relays vivos de nostr.watch.
+// offchain.pub quedó fuera el 09/11/2026: rechaza los eventos ("pubkey is not
+// in our web of trust"), así que anuncia pero nunca entrega.
 const NET_RELAYS = [
   'wss://nos.lol', 'wss://relay.primal.net', 'wss://nostr.mom',
-  'wss://offchain.pub', 'wss://nostr-pub.wellorder.net',
+  'wss://relay.snort.social', 'wss://nostr.land', 'wss://nostr-pub.wellorder.net',
 ];
 const NET_ABC = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // sin I/O/0/1: se dicta por teléfono
 const NET = { role: null, code: null, room: null, peers: [], lib: null, ping: null, timer: null };
+// estado del DUELO en sí (ver el bloque de la fase 2 más abajo)
+const DUEL = {
+  on: false, host: false, cards: new Map(), picks: null, peerPicks: null, name: 'RIVAL',
+  uid: 0, rid: 0, phase: 'main', pilot: null, act: null, asks: new Map(),
+  asking: null, ansCache: new Map(), actSeq: 0, lastAct: null, actBeat: null, actSeen: 0,
+  dirty: false, snapAt: 0, sentEnd: false, shownEnd: false, peerName: 'RIVAL',
+};
 
 function netSay(msg, cls = '') {
   const n = $('netStatus');
@@ -7161,9 +7228,17 @@ function netAction(room, name, cb) {
 }
 let netTries = 0;
 function netReset() {
+  netTrace('reset');
+  DUEL.ansCache.clear(); DUEL.asking = null; DUEL.seqAt = 0;
+  DUEL.lastAct = null; DUEL.actSeq = 0; DUEL.actSeen = 0;
+  if (DUEL.actBeat) { clearInterval(DUEL.actBeat); DUEL.actBeat = null; }
   if (NET.timer) clearInterval(NET.timer);
   if (NET.retry) clearTimeout(NET.retry);
   NET.timer = null; NET.retry = null; netTries = 0;
+  netActIn(null);
+  for (const f of DUEL.asks.values()) f(null);
+  DUEL.asks.clear();
+  DUEL.on = false; DUEL.phase = 'main'; DUEL.pilot = null; DUEL.sentEnd = false; DUEL.shownEnd = false;
   try { if (NET.room) NET.room.leave(); } catch (e) {}
   NET.room = null; NET.peers = []; NET.ping = null; NET.role = null; NET.code = null;
 }
@@ -7184,6 +7259,7 @@ async function netOpen(role, code) {
   $('net').classList.remove('hidden');
   if (location.protocol === 'file:') { netSay(T('netNoFile'), 'err'); return; }
   netSay(T('netWaiting'), 'wait');
+  netShowDuelBox();
   await netJoinNow(role, code);
 }
 /* Entrar en la sala (y volver a entrar si hace falta). El anuncio de un peer se
@@ -7204,6 +7280,14 @@ async function netJoinNow(role, code) {
   if (NET.code !== code) return;          // se cerró la sala mientras cargaba el módulo
   const room = NET.lib.joinRoom({ appId: NET_APP, relayConfig: { urls: NET_RELAYS } }, 'bk-' + code);
   NET.room = room;
+  DUEL.host = role === 'host';
+  // canales del duelo: meta (lobby/empezar/final), act (jugadas del invitado),
+  // snap (foto del estado) y ask/ans (preguntas del árbitro al invitado).
+  NET.metaCh = netAction(room, 'meta', m => netMeta(m));
+  NET.actCh = netAction(room, 'act', m => netActIn(m));
+  NET.snapCh = netAction(room, 'snap', m => netApplySnap(m));
+  NET.askCh = netAction(room, 'ask', m => netPrompt(m));
+  NET.ansCh = netAction(room, 'ans', m => netAnswer(m));
   NET.ping = netAction(room, 'ping', msg => {
     if (!msg) return;
     if (msg.back) netSay(fmtT(T('netLive'), { n: Math.max(1, Math.round(performance.now() - msg.back)) }), 'ok');
@@ -7213,10 +7297,16 @@ async function netJoinNow(role, code) {
     if (!NET.peers.includes(id)) NET.peers.push(id);
     if (NET.retry) { clearTimeout(NET.retry); NET.retry = null; }
     netSay(T('netPeerJoined'), 'ok');
+    netHello();
   };
   room.onPeerLeave = id => {
+    netTrace('peer leave');
     NET.peers = NET.peers.filter(p => p !== id);
-    netSay(T('netPeerLeft'), 'err');
+    // nadie se queda esperando una respuesta que ya no va a llegar
+    netActIn(null);
+    for (const f of DUEL.asks.values()) f(null);
+    DUEL.asks.clear();
+    netSay(DUEL.on ? T('netLeftDuel') : T('netPeerLeft'), 'err');
   };
   // latencia: prueba de que el canal está abierto en los dos sentidos
   NET.timer = setInterval(() => {
@@ -7269,6 +7359,528 @@ addEventListener('pagehide', netReset);
 {
   const hit = /[#&]s=([A-Za-z0-9]{4})/.exec(location.hash || '') || /[?&]sala=([A-Za-z0-9]{4})/.exec(location.search || '');
   if (hit) netOpen('guest', hit[1].toUpperCase());
+}
+
+/* =====================================================================
+   DUELO ONLINE — FASE 2: LA PARTIDA
+
+   El ANFITRIÓN es el árbitro: su navegador tiene el motor y la única `G`
+   de verdad. El INVITADO es un terminal: recibe fotos del estado, las
+   pinta con el mismo render() de siempre y manda lo que quiere hacer.
+   No ejecuta ni una regla, así que las dos pantallas no pueden
+desincronizarse: si algo se ve distinto es porque aún no ha llegado la
+   foto siguiente.
+
+   Canales (Trystero): meta (saludo / empezar / final), act (jugadas del
+   invitado), snap (foto del estado), ask-ans (preguntas del árbitro).
+
+   Simplificaciones de la v1, a propósito: turnos completos (no alternos)
+   y sin mulligan. Los EFECTOS de las cartas del invitado los resuelve el
+   motor con la lógica de la CPU, igual que si jugara contra la máquina.
+   ===================================================================== */
+function netTo(kind, msg) {
+  const a = NET[kind + 'Ch'];   // NET.metaCh, NET.actCh, NET.snapCh, NET.askCh, NET.ansCh
+  // se emite a la sala entera (no a NET.peers[0]): la lista de peers es solo
+  // para la interfaz y puede quedarse atrás si un relay parpadea, y entonces
+  // el canal seguiría vivo pero las jugadas se perderían en silencio.
+  if (!a || !NET.room) { netTrace('send-fallido', kind, 'a=' + !!a, 'room=' + !!NET.room); return false; }
+  try { a(msg); netTrace('send', kind, msg && msg.k || msg && msg.u || ''); return true; } catch (e) { netTrace('send-throw', kind, e.message); return false; }
+}
+const netGuest = () => !!(DUEL.on && !DUEL.host);
+// traza corta para diagnosticar una partida atascada desde la consola:
+// `__NETTRACE` guarda lo último que hizo cada lado.
+function netTrace(...a) {
+  try {
+    (window.__NETTRACE = window.__NETTRACE || []).push(Math.round(performance.now()) + ' ' + a.join(' '));
+    if (window.__NETTRACE.length > 200) window.__NETTRACE.shift();
+  } catch (e) {}
+}
+
+/* ---------- mazos: los dos eligen dos facciones en el setup ---------- */
+function netMyPicks() {
+  if (DUEL.picks) return DUEL.picks;
+  return pick.length === 2 ? pick.map(p => ({ f: p.f, s: p.s })) : null;
+}
+function netValidPicks(p) {
+  if (!Array.isArray(p)) return null;
+  const ok = x => !!(x && D.db[x.f] && D.db[x.f].some(c => (c.set ?? PLAY_SET) === x.s));
+  const clean = p.filter(ok).slice(0, 2);
+  if (clean.length !== 2 || clean[0].f === clean[1].f) return null;
+  return clean.map(x => ({ f: x.f, s: x.s }));
+}
+function netRandomPicks(avoid = []) {
+  const no = new Set((avoid || []).map(p => p.f));
+  const pool = shuf(D.factions.filter(f => !no.has(f)));
+  return pool.slice(0, 2).map(f => {
+    const sets = [...new Set((D.db[f] || []).map(c => c.set ?? PLAY_SET))].sort((a, b) => a - b);
+    return { f, s: sets[Math.floor(rng() * sets.length)] ?? PLAY_SET };
+  });
+}
+function netDeckLabel() {
+  const p = netMyPicks();
+  $('netDeck').textContent = p
+    ? p.map(x => (FAC_LABEL[x.f] ?? x.f) + ' · ' + (SET_LABEL[x.s] ?? ('SET 0' + x.s))).join(' + ')
+    : T('netNoPicks');
+}
+function netShowDuelBox() {
+  netDeckLabel();
+  $('netDuelBox').classList.remove('hidden');
+  $('btnNetStart').classList.toggle('hidden', !(DUEL.host && NET.peers.length));
+}
+function netBackToLobby() {
+  if (G && G.netDuel) return;                 // no se toca el lobby en mitad de un duelo
+  $('setup').classList.add('hidden');
+  $('menu').classList.add('hidden');
+  $('net').classList.remove('hidden');
+  netShowDuelBox();
+  if (NET.peers.length) netSay(T('netPeerReady'), 'ok');
+}
+
+/* ---------- saludo y arranque ---------- */
+function netHello() {
+  DUEL.host = NET.role === 'host';
+  netTo('meta', { k: 'hello', picks: netMyPicks(), name: DUEL.host ? 'ANFITRIÓN' : 'RIVAL' });
+  netShowDuelBox();
+  if (DUEL.host) netSay(T('netPeerReady'), 'ok');
+  else netSay(T('netWaitHost'), 'wait');
+}
+function netMeta(m) {
+  if (!m || typeof m !== 'object') return;
+  if (m.k === 'hello') {
+    DUEL.peerPicks = m.picks ?? null;
+    DUEL.peerName = m.name || 'RIVAL';
+    if (!DUEL.on) netShowDuelBox();
+    if (!DUEL.host && !DUEL.on) netSay(T('netWaitHost'), 'wait');
+    return;
+  }
+  if (m.k === 'start' && !DUEL.host && !DUEL.on) return netGuestStart(m.mine, m.name);
+  if (m.k === 'end' && !DUEL.host) return netGuestEnd(m);
+}
+function netHostStart() {
+  if (DUEL.on) return;
+  if (!NET.peers.length) { netSay(T('netWaiting'), 'wait'); return; }   // solo para el botón
+  const mine = netValidPicks(netMyPicks()) || netRandomPicks();
+  const theirs = netValidPicks(DUEL.peerPicks) || netRandomPicks(mine);
+  DUEL.name = DUEL.peerName || 'RIVAL';
+  $('net').classList.add('hidden');
+  $('menu').classList.add('hidden');
+  $('setup').classList.add('hidden');
+  $('end').classList.add('hidden');
+  netTo('meta', { k: 'start', mine: theirs, name: 'ANFITRIÓN' });
+  DUEL.host = true;
+  newGame(mine, theirs, 'wences', null, true);
+}
+function netGuestStart(mine, name) {
+  DUEL.on = true; DUEL.host = false; DUEL.name = name || 'ANFITRIÓN';
+  DUEL.sentEnd = false; DUEL.shownEnd = false; DUEL.phase = 'main';
+  if (netValidPicks(mine)) DUEL.picks = netValidPicks(mine);
+  $('net').classList.add('hidden');
+  $('menu').classList.add('hidden');
+  $('setup').classList.add('hidden');
+  $('end').classList.add('hidden');
+  banner(T('netDuelOn'));
+}
+$('btnNetStart').onclick = netHostStart;
+$('btnNetDeck').onclick = () => { if (G && G.netDuel) return; openSetupFromMenu(); };
+
+/* ---------- identidad de las cartas ----------
+   Cada copia del mazo lleva un `__u` para poder nombrarla por red: las fotos
+   y las respuestas viajan con números, no con cartas enteras. */
+function netAssignUids() {
+  DUEL.uid = 0;
+  const visit = c => { if (c && typeof c === 'object' && !c.__u) c.__u = ++DUEL.uid; };
+  for (const P of [G.P, G.O]) {
+    [...P.lib, ...P.hand, ...P.discard, ...P.lives.map(l => l.lifeCard), ...P.eTable.map(e => e.card)].forEach(visit);
+    P.battle.forEach(u => { visit(u.card); if (u.pilot) visit(u.pilot); });
+  }
+}
+function netDuelBegin() {
+  DUEL.on = true; DUEL.host = true; DUEL.phase = 'main';
+  DUEL.sentEnd = false; DUEL.shownEnd = false;
+  G.netDuel = true;
+  G.O.name = DUEL.name || 'RIVAL';
+  netAssignUids();
+  $('mull').classList.add('hidden');
+  $('net').classList.add('hidden'); $('menu').classList.add('hidden'); $('setup').classList.add('hidden');
+  logLine(T('netDuelOn'), 'hl');
+  // iniciativa: la tira el anfitrión y la foto la lleva a las dos pantallas
+  let a = 0, b = 0;
+  while (a === b) { a = 1 + Math.floor(rng() * 12); b = 1 + Math.floor(rng() * 12); }
+  giveOpeningEnergy(a > b);
+  if (a > b) { logLine(fmtT(T('drawMine'), { a, b }), 'hl'); startMyTurn(); }
+  else { logLine(fmtT(T('drawOpp'), { a, b }), 'bad'); aiTurn(); }
+  netSnap(true);
+}
+
+/* ---------- foto del estado (del anfitrión al invitado) ----------
+   Se manda lo que se VE en la mesa: las dos batallas, los descartes, las
+   vidas (dorso + dado) y TU mano. La mano y el mazo del rival solo van como
+   cuenta, nunca como cartas. */
+function netPackSide(P, own) {
+  return {
+    name: own ? T('you') : (DUEL.name || 'RIVAL'),
+    color: P.color, colors: P.colors, facs: P.facs,
+    pending: !!P.pending, gone: !!P.gone,
+    lives: P.lives.map(l => ({ die: l.die, tapped: !!l.tapped, lifeCard: l.lifeCard ? 1 : null })),
+    battle: units(P).map(u => ({ card: u.card, pilot: u.pilot || null, tapped: !!u.tapped, attackType: u.attackType || null })),
+    eTable: P.eTable.map(e => ({ card: { isEnergy: true }, tapped: !!e.tapped })),
+    hand: own ? P.hand : new Array(P.hand.length),
+    discard: P.discard,
+    lib: new Array(P.lib.length),
+  };
+}
+function netGuestPhase() {
+  if (!G) return 'mulligan';
+  if (G.over) return 'over';
+  if (G.phase === 'aiTurn') return DUEL.phase === 'attack' ? 'myAttack' : 'myMain';
+  if (G.phase === 'mulligan') return 'mulligan';
+  return 'aiTurn';
+}
+function netPackSnap() {
+  const ph = netGuestPhase();
+  return {
+    k: 'snap', seq: (DUEL.snapSeq = (DUEL.snapSeq || 0) + 1), turn: G.turn, phase: ph, over: !!G.over,
+    // piloto que el rival tiene "en la mano" esperando a un MECH: es el árbitro
+    // quien manda, así que su estado viaja en la foto (si el host lo descarta,
+    // la selección del invitado se cae sola en vez de quedarse en bucle)
+    pil: DUEL.pilot ? DUEL.pilot.__u : null,
+    token: (ph === 'myMain' || ph === 'myAttack') ? 'P' : 'O',
+    mine: netPackSide(G.O, true), theirs: netPackSide(G.P, false),
+  };
+}
+function netSnap(force) {
+  if (!DUEL.on || !DUEL.host || !G) return;
+  if (!NET.room) return;
+  const now = performance.now();
+  if (!force && now - DUEL.snapAt < 140) { DUEL.dirty = true; return; }
+  DUEL.snapAt = now; DUEL.dirty = false;
+  netTo('snap', netPackSnap());
+}
+/* el anfitrión manda una foto cada vez que su mesa cambia (a 3-4 por segundo,
+   con tope: los re-renders de las animaciones no inundan el canal) */
+const netRenderOrig = render;
+render = () => {
+  netRenderOrig();
+  if (DUEL.on && DUEL.host && G) DUEL.dirty = true;
+};
+setInterval(() => { if (DUEL.dirty) netSnap(true); }, 260);
+
+/* ---------- el invitado pinta la foto ---------- */
+function netIndexCards() {
+  if (!G) return;
+  const m = new Map();
+  const put = c => { if (c && c.__u) m.set(c.__u, c); };
+  for (const P of [G.P, G.O]) {
+    [...(P.hand || []), ...(P.discard || []), ...(P.eTable || []).map(e => e.card),
+      ...(P.lives || []).map(l => l.lifeCard), ...(P.battle || []).map(u => u.card),
+      ...(P.battle || []).filter(u => u.pilot).map(u => u.pilot)].forEach(put);
+  }
+  DUEL.cards = m;
+}
+function netApplySnap(s) {
+  if (!s || !s.mine || DUEL.host) return;
+  // una foto vieja (la que viaja dentro de una pregunta repetida) no rebobina la mesa
+  if (s.seq && s.seq < (DUEL.seqAt || 0)) return;
+  if (s.seq) DUEL.seqAt = s.seq;
+  // con el turno nuevo deja de repetirse la jugada anterior
+  if (DUEL.lastAct && DUEL.lastAct.atTurn !== s.turn) DUEL.lastAct = null;
+  DUEL.on = true;
+  DUEL.phase = s.phase === 'myAttack' ? 'attack' : 'main';
+  DUEL.snapAt = performance.now();
+  const t0 = (G && G.t0) || Date.now();
+  G = {
+    P: s.mine, O: s.theirs, turn: s.turn, phase: s.phase, token: s.token || 'O',
+    over: !!s.over, persona: '', spec: null, busy: false, alt: null, turnsMode: 'full',
+    netDuel: true, t0, stats: null, firstTurnDone: true,
+  };
+  attacker = null;
+  netIndexCards();
+  pendingPilot = s.pil ? (DUEL.cards.get(s.pil) || s.mine.hand.find(c => c && c.__u === s.pil) || null) : null;
+  render();
+}
+/* lo que el invitado pulsa aquí no se ejecuta: se pide al árbitro */
+function netGuestPlay(c) {
+  if (!G || G.over || !c) return;
+  if (c.type === 'PILOT' && units(G.P).some(u => u.card.type === 'MECH' && !u.pilot)) {
+    pendingPilot = pendingPilot === c ? null : c;
+    render();
+    return;
+  }
+  pendingPilot = null;
+  netAct({ k: 'play', u: c.__u });
+}
+
+/* ---------- preguntas del árbitro al invitado ---------- */
+// si el rival no contesta en 10 s (mensaje perdido o pestaña dormida) el
+// árbitro decide por él y la partida no se queda esperando: red de seguridad,
+// no una regla.
+function netAsk(payload, ms = 10000) {
+  if (!NET.room) return Promise.resolve(null);
+  const rid = ++DUEL.rid;
+  let snap = null;
+  try { snap = netPackSnap(); } catch (e) { dbg('netPackSnap: ' + e.message); }
+  // la foto va DENTRO de la pregunta: así el invitado nunca enseña una mano
+  // que no es la de ese momento
+  const msg = { ...payload, rid, snap };
+  return new Promise(res => {
+    DUEL.asks.set(rid, res);
+    if (!netTo('ask', msg)) { DUEL.asks.delete(rid); return res(null); }
+    // la pregunta se repite hasta que llegue respuesta: un mensaje suelto
+    // perdido en el enlace P2P dejaría el duelo colgado para siempre.
+    const beat = setInterval(() => {
+      if (!DUEL.asks.has(rid)) { clearInterval(beat); return; }
+      netTo('ask', msg);
+    }, 2500);
+    setTimeout(() => { clearInterval(beat); if (DUEL.asks.has(rid)) { DUEL.asks.delete(rid); res(null); } }, ms);
+  });
+}
+function netAnswer(m) {
+  const f = m && DUEL.asks.get(m.rid);
+  if (f) { DUEL.asks.delete(m.rid); f(m.v ?? null); }
+}
+function netPrompt(m) {
+  if (!m || typeof m !== 'object') return;
+  // si esta pregunta ya se contestó y el anfitrión la repite (la respuesta se
+  // perdió), se reenvía la respuesta en vez de reabrir el modal
+  if (DUEL.ansCache.has(m.rid)) { netTo('ans', { rid: m.rid, v: DUEL.ansCache.get(m.rid) }); return; }
+  if (DUEL.asking === m.rid) return;          // ya está en pantalla
+  DUEL.asking = m.rid;
+  if (m.snap) netApplySnap(m.snap);
+  const byUid = u => DUEL.cards.get(u);
+  let p = null;
+  if (m.kind === 'choose') {
+    p = chooseCardsFromBoard({
+      title: m.title, text: m.text,
+      cards: m.cards ? m.cards.map(byUid).filter(Boolean) : null,
+      items: m.items ? m.items.map(byUid).filter(Boolean) : null,
+      required: m.required ?? 1, multiple: !!m.multiple, max: m.max ?? null,
+      returnItems: !!m.units, ok: m.ok ?? null,
+    });
+  } else if (m.kind === 'energy') {
+    p = chooseCardsFromBoard({
+      title: T('energyAsk'), text: fmtT(T('energyAskText'), { n: m.n }),
+      cards: (m.cards || []).map(byUid).filter(Boolean),
+      required: 0, max: m.n, multiple: true, ok: T('energyReady'),
+    });
+  } else if (m.kind === 'intercept') {
+    p = askIntercept((m.cards || []).map(byUid).filter(Boolean), m.a || '', m.t);
+  } else if (m.kind === 'type') {
+    p = askAttackType({ card: { name: m.name }, pilot: null });
+  }
+  if (!p) { DUEL.asking = null; return; }
+  Promise.resolve(p).then(chosen => {
+    let v = null;
+    if (Array.isArray(chosen)) v = chosen.map(x => (x && x.card ? x.card.__u : (x && x.__u))).filter(u => u != null);
+    else if (chosen && typeof chosen === 'string') v = chosen;
+    else if (chosen) v = chosen.card ? chosen.card.__u : chosen.__u;
+    DUEL.ansCache.set(m.rid, v);
+    if (DUEL.ansCache.size > 60) DUEL.ansCache.delete(DUEL.ansCache.keys().next().value);
+    netTo('ans', { rid: m.rid, v });
+  }).catch(() => netTo('ans', { rid: m.rid, v: null })).finally(() => { if (DUEL.asking === m.rid) DUEL.asking = null; });
+}
+
+/* ---------- decisiones del rival (las pregunta el anfitrión) ---------- */
+async function netDefenderPick(valid, u) {
+  const r = await netAsk({
+    kind: 'choose', title: T('defTitle'), text: fmtT(T('defAsk'), { a: u.card.name, t: attackTypeOf(u) }),
+    items: valid.map(x => x.card.__u), units: true, ok: T('defOk'),
+  });
+  const pickU = valid.find(x => x.card.__u === (Array.isArray(r) ? r[0] : r));
+  return pickU || valid[0];
+}
+async function netInterceptPick(D, u, targetUnit) {
+  const opts = interceptOptions(D, targetUnit);
+  if (!opts.length) return null;
+  const r = await netAsk({
+    kind: 'intercept', cards: opts.map(c => c.__u), a: u.card.name,
+    t: targetUnit ? T('reactUnit') : T('reactLife'),
+  });
+  const card = opts.find(c => c.__u === (Array.isArray(r) ? r[0] : r));
+  return card ? createIntercept(D, card) : null;
+}
+async function netHumanIntercept(D, u, targetUnit) {
+  const opts = interceptOptions(D, targetUnit);
+  if (!opts.length) return null;
+  const chosen = await askIntercept(opts, u.card.name, targetUnit ? T('reactUnit') : T('reactLife'));
+  return chosen ? createIntercept(D, chosen) : null;
+}
+
+/* ---------- el turno del rival remoto ----------
+   Mismo esqueleto que aiTurnFor (enderezar → robar+energía → desplegar →
+   atacar) pero cada decisión se espera de la red. */
+/* las jugadas del invitado se numeran y se repiten hasta que la mesa avanza:
+   un mensaje suelto perdido en el enlace dejaría al anfitrión esperando para
+   siempre. El número hace que el anfitrión ignore los repetidos. */
+function netAct(msg) {
+  const m = { ...msg, n: ++DUEL.actSeq, atTurn: G ? G.turn : 0 };
+  if (!netTo('act', m)) return false;
+  DUEL.lastAct = m;
+  if (!DUEL.actBeat) DUEL.actBeat = setInterval(() => {
+    if (!DUEL.on || !DUEL.lastAct) { clearInterval(DUEL.actBeat); DUEL.actBeat = null; return; }
+    netTo('act', DUEL.lastAct);
+  }, 3000);
+  return true;
+}
+function netActWait(ms = 15000) {
+  // red de seguridad: si no llega ninguna jugada, se cierra el turno del rival
+  return new Promise(r => {
+    let done = false;
+    const fin = v => { if (!done) { done = true; DUEL.act = null; r(v); } };
+    DUEL.act = fin;
+    setTimeout(() => fin({ k: 'end', n: -1 }), ms);
+  });
+}
+function netActIn(m) {
+  if (!DUEL.on || DUEL.host !== true) return;      // el invitado no manda aquí
+  if (m && typeof m.n === 'number') {
+    if (m.n > 0 && m.n <= (DUEL.actSeen || 0)) return;    // repetido
+    if (m.n > 0) DUEL.actSeen = m.n;
+  }
+  const f = DUEL.act;
+  netTrace('act', m && m.k, 'waiter=' + (f ? 'Y' : 'n'));
+  if (f) { DUEL.act = null; f(m || null); }
+}
+async function netOppTurn() {
+  if (!G || G.over) return;
+  const P = G.O, E = G.P;
+  DUEL.phase = 'main'; DUEL.pilot = null;
+  G.token = 'O'; G.phase = 'aiTurn';
+  const isLast = P.pending; P.pending = false;
+  for (const u of P.battle) u.tapped = false;
+  for (const l of P.lives) l.tapped = false;
+  for (const e of P.eTable) e.tapped = false;
+  E.lifeLostThisTurn = false; P.deploysThisTurn = 0;
+  render(); netSnap(true);
+  if (!P.lib.length && !P.discard.length) { eliminate(P, T('rNoDeck')); if (!G.over) startMyTurn(); return; }
+  if (!G.firstTurnDone) G.firstTurnDone = true;
+  drawN(P, SETTINGS.draw);                        // §7.4: robo al empezar
+  render(); netSnap(true);                        // el rival ve su mano antes de elegir
+  // §7.1: coloca energía boca abajo (la elige él)
+  const huecos = Math.min(MAX_ENERGY - P.eTable.length, MAX_ENERGY_PER_TURN);
+  if (huecos > 0 && P.hand.length) {
+    const sel = await netAsk({ kind: 'energy', cards: P.hand.map(c => c.__u), n: huecos });
+    let k = 0;
+    for (const uid of (Array.isArray(sel) ? sel : [])) {
+      const c = P.hand.find(x => x.__u === uid);
+      if (c && putAsEnergy(P, c)) k++;
+    }
+    if (k) logLine(fmtT(T('energySetN'), { n: k }), 'dim');
+    render(); netSnap(true);
+  }
+  for (;;) {
+    if (!G || G.over) { netTrace('loop fin G'); return; }
+    netSnap();
+    netTrace('loop espera');
+    const m = await netActWait();   // 15 s y sigue: un mensaje perdido no congela
+
+    if (!m) { netTrace('loop sin accion'); netSay(T('netLeftDuel'), 'err'); return; }
+    netTrace('loop recibe', m.k, m.u);
+    if (m.k === 'end') {
+      // misma regla que abajo: no se cierra el turno con unidades que aún pueden atacar
+      if (anyLegalAttack(P, E)) { DUEL.phase = 'attack'; banner(T('hNext'), true); render(); netSnap(true); continue; }
+      break;
+    }
+    if (m.k === 'phase') { DUEL.phase = 'attack'; render(); netSnap(true); continue; }
+    // una jugada que falle no puede dejar el turno muerto: se avisa y se sigue
+    // esperando (antes, un error aquí mataba el bucle y el rival se quedaba
+    // pulsando botones sin que pasara nada)
+    try {
+      if (m.k === 'play') await netRemotePlay(P, E, m.u);
+      else if (m.k === 'mount') await netRemoteMount(P, E, m.u);
+      else if (m.k === 'attack') await netRemoteAttack(P, E, m.u);
+      else if (m.k === 'surrender') { eliminate(P, T('endSurr')); return; }
+    } catch (err) {
+      attacker = null;
+      if (G) G.busy = false;
+      dbg(err);
+      if (G && !G.over) logLine('online: ' + (err && err.message ? err.message : err), 'bad');
+      render(); netSnap(true);
+    }
+    continue;
+  }
+  if (!G || G.over) return;
+  if (isLast && !P.lives.some(l => l.lifeCard)) { eliminate(P, T('rLast')); if (!G.over) startMyTurn(); return; }
+  G.turn++;
+  DUEL.phase = 'main'; DUEL.pilot = null;
+  startMyTurn();
+}
+async function netRemotePlay(P, E, uid) {
+  const c = P.hand.find(x => x && x.__u === uid);
+  if (!c || !canAttemptPlay(P, c)) { netSnap(true); return; }
+  if (c.type === 'PILOT' && units(P).some(u => u.card.type === 'MECH' && !u.pilot)) {
+    DUEL.pilot = c;                          // espera a que elija el MECH
+    render(); netSnap(true);
+    return;
+  }
+  if (needsUnitReplacement(P, c)) {
+    const d = await netAsk({
+      kind: 'choose', title: T('unitChoiceTitle'), text: fmtT(T('unitChoiceText'), { c: c.name }),
+      items: boardUnits(P).map(x => x.card.__u), units: true,
+    });
+    const victim = boardUnits(P).find(x => x.card.__u === (Array.isArray(d) ? d[0] : d));
+    if (!victim) { netSnap(true); return; }
+    discardBattleUnit(P, victim);
+  }
+  if (!canAttemptPlay(P, c) || needsUnitReplacement(P, c)) { netSnap(true); return; }
+  deployUnit(P, c, E);
+  render(); netSnap(true);
+}
+async function netRemoteMount(P, E, uid) {
+  const pil = DUEL.pilot;
+  DUEL.pilot = null;
+  if (!pil || !P.hand.includes(pil)) { netSnap(true); return; }
+  const u = units(P).find(x => x.card.__u === uid && x.card.type === 'MECH' && !x.pilot)
+    || units(P).find(x => x.card.type === 'MECH' && !x.pilot);   // si el uid no cuadra, el único MECH libre
+  if (u) deployUnit(P, pil, E, u);
+  render(); netSnap(true);   // la foto limpia la selección del invitado si no se pudo montar
+}
+async function netRemoteAttack(P, E, uid) {
+  const u = units(P).find(x => x.card.__u === uid);
+  if (!u || u.tapped || G.busy) { netTrace('ataque ignorado', uid, u ? 'tapped=' + u.tapped : 'sin-unidad', 'busy=' + G.busy, 'uid=' + units(P).map(x => x.card.__u).join('/')); return; }
+  DUEL.phase = 'attack';        // el rival ya está en la fase de ataque
+  attacker = u;
+  let tipo = atkTypeOf(u.card);
+  if (has(u, 'CHAMELEON')) {
+    const t = await netAsk({ kind: 'type', name: u.card.name });
+    if (t === 'MAGIC' || t === 'SWORD') tipo = t;
+  }
+  u.attackType = tipo;
+  const valid = units(E).filter(x => puedeDefender(x, tipo));
+  render();
+  if (!valid.length && !livesOpen(E)) {
+    u.attackType = null; attacker = null;
+    logLine(u.card.name + ' → ' + T('noTarget'));
+    render(); netSnap(true);
+    return;
+  }
+  const target = valid.length ? await chooseDefender(valid, u.card.name, tipo) : null;
+  if (!attacker || G.over) { attacker = null; return; }
+  await resolveMyAttack(target, 'O');
+  attacker = null;
+  netSnap(true);
+}
+
+/* ---------- final ---------- */
+function netTellEnd(t) {
+  DUEL.sentEnd = true;
+  const win = t === T('endDraw') ? 'draw' : (t === T('endWinT') ? 'host' : 'guest');
+  netTo('meta', { k: 'end', win });
+  netSnap(true);
+}
+function netGuestEnd(m) {
+  if (DUEL.shownEnd) return;
+  DUEL.shownEnd = true;
+  if (G) G.over = true;
+  $('endTitle').textContent = m.win === 'draw' ? T('endDraw') : (m.win === 'guest' ? T('endWinT') : T('endLoseT'));
+  $('endText').textContent = m.win === 'draw' ? T('endDrawSame') : (m.win === 'guest' ? T('endWin') : T('endLose'));
+  $('endVs').innerHTML = '';
+  $('endStats').classList.add('hidden');
+  $('endCards').classList.add('hidden');
+  $('endPack').classList.add('hidden');
+  $('btnEndCancel').classList.add('hidden');
+  $('btnEndMenu').classList.remove('hidden');
+  $('end').classList.remove('hidden');
+  render();
 }
 $('btnBackMenu').onclick = () => { $('setup').classList.add('hidden'); refreshMenuElo(); $('menu').classList.remove('hidden'); };
 const facGrid = $('facPick');
@@ -7350,6 +7962,9 @@ function refreshFacInfo() {
 buildFacGrid(); refreshFacInfo();
 $('btnStart').onclick = () => {
   $('setup').classList.add('hidden');
+  // En una sala online el setup solo sirve para ELEGIR MAZO: guarda las dos
+  // facciones y vuelve al lobby del duelo (no arranca partida local).
+  if (NET.role && !DUEL.on) { DUEL.picks = pick.length === 2 ? pick.map(p => ({ f: p.f, s: p.s })) : null; netBackToLobby(); return; }
   // el rival NUNCA repite facción contigo (ni aunque sea de otro set)
   const taken = pick.map(p => p.f);
   const pool = shuf(D.factions.filter(f => !taken.includes(f)));
@@ -8419,6 +9034,7 @@ $('btnSpeed').onclick = () => setVelocidad(aVelocidad() === 1 ? 2 : aVelocidad()
 $('btnSurrender').onclick = () => {
   if (!G || G.over || G.spec) return;
   if (!confirm(T('surrAsk'))) return;
+  if (netGuest()) { netAct({ k: 'surrender' }); return; } // lo aplica el anfitrión
   logLine(T('endSurr'), 'bad');
   showEnd(T('endLoseT'), T('endSurr'));
 };
