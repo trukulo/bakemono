@@ -767,13 +767,20 @@ cambia a auto). El contenido cabe by design en 1280×720+ */
     margin: 14px 0; flex-wrap: wrap; }
   .mulligan-row .card, .react-row .card { flex: 0 0 200px; }
   .pile-row .card { flex: 0 0 120px; }
-  /* menú principal: rejilla 2 columnas para que todo quepa sin scroll */
-  .menubtns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 20px auto; max-width: 620px; }
+  /* menú principal: bloques por intención (jugar · online · ver · datos · ayuda)
+     y dentro de cada bloque, rejilla de dos columnas */
+  .menubtns { margin: 20px auto; max-width: 620px; }
+  .menustack { display: flex; flex-direction: column; gap: 12px; }
+  .menugrp { display: flex; flex-direction: column; gap: 6px; }
+  .menugrph { display: flex; align-items: center; gap: 8px; font-size: 10px; font-weight: 800;
+    letter-spacing: .18em; text-transform: uppercase; color: rgba(232,185,49,.72); padding: 0 2px; }
+  .menugrph::after { content: ''; flex: 1 1 auto; height: 1px; background: linear-gradient(90deg, rgba(232,185,49,.30), rgba(232,185,49,0)); }
+  .menugrid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
   /* Mochiy Pop One es más ancha: 14 px con el tracking cerrado mantiene
-     los rótulos largos ("Campeonato (16 · playoffs)") en una sola línea. */
+     los rótulos en una sola línea. */
   .menubtns button { font-size: 14px; letter-spacing: -.04em; padding: 12px 8px; white-space: normal; }
-  .menubtns .primary { grid-column: 1 / -1; }
-  @media (max-width: 640px) { .menubtns { grid-template-columns: 1fr; } }
+  .menugrid .primary { grid-column: 1 / -1; }
+  @media (max-width: 640px) { .menugrid { grid-template-columns: 1fr; } }
   /* rótulo BAKEMONO: mincho de imprenta, oro batido sobre bermellón */
   #menu .klogo { margin: 2px 0 4px; line-height: .95; font-family: var(--font-title);
     font-weight: 900; font-size: clamp(44px, 8.2vw, 104px); letter-spacing: clamp(2px, .6vw, 10px);
@@ -787,7 +794,8 @@ cambia a auto). El contenido cabe by design en 1280×720+ */
   #menu .klogo::before, #menu .klogo::after { content: none; }
   /* un dorso de carta de adorno a cada lado de los botones, quieto */
   .menudeco { display: flex; align-items: center; justify-content: center; gap: clamp(14px, 3vw, 40px); }
-  .menudeco .menubtns { margin: 20px 0; }
+  /* el bloque de botones ocupa el hueco entre los dos adornos; en móvil, todo el ancho */
+  .menudeco .menubtns { margin: 20px 0; flex: 1 1 auto; min-width: 0; }
   .fan { display: flex; pointer-events: none; flex: 0 0 auto; }
   .fan img { width: clamp(76px, 8.4vw, 132px); aspect-ratio: 460 / 644; object-fit: cover;
     border-radius: 10px; box-shadow: 0 14px 34px rgba(0,0,0,.66), 0 0 0 1px rgba(255,255,255,.10) inset;
@@ -1325,7 +1333,7 @@ table, .statstable { font-family: var(--hud-fuente); }
   .league-status strong { color:var(--gold); }
   @media (max-width:700px) { .league-kpis { grid-template-columns:repeat(2,minmax(0,1fr)); gap:7px; } .league-kpi { padding:8px; } .league-kpi strong { font-size:17px; } }
   .menu-exit { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
-  .menu-exit { max-width: 780px; margin: 0 auto; }
+  .menu-exit { max-width: 620px; margin: 0 auto; }   /* misma columna que los bloques */
   .menu-exit button { font-size: 14px; padding: 9px 16px; flex: 1 1 260px; }
 .settings-grid { display: grid; gap: 12px; margin: 18px auto; max-width: 560px; text-align: left; }
 .setting { display: grid; gap: 6px; font-weight: 800; }
@@ -2348,23 +2356,48 @@ body.chibi .card.sel::before { background: linear-gradient(180deg, #FFD9E7, var(
   <div class="box">
     <div class="langpick"><button id="langEs" title="Español"><span class="fl fl-es"></span>ES</button><button id="langEn" title="English"><span class="fl fl-en"></span>EN</button></div>
     <h1 class="klogo" aria-label="BAKEMONO"><span>BAKEMONO</span></h1>
-    <p><span data-i="menuSub">Duelo de CHAMPIONS, GODDESSES y BAKEMONO · </span><span id="menuMode"></span><span id="menuElo"></span> · <span id="buildTag" title="versión de esta copia">build 20261110-0924</span></p>
+    <p><span data-i="menuSub">Duelo de CHAMPIONS, GODDESSES y BAKEMONO · </span><span id="menuMode"></span><span id="menuElo"></span> · <span id="buildTag" title="versión de esta copia">build 20261110-1303</span></p>
     <div class="menudeco" aria-hidden="true">
       <div class="fan fan-l"><img alt=""></div>
-      <div class="menubtns">
-        <button class="primary" id="btnGoSetup" data-i="mPlay">Simulacrum (Empezar partida)</button>
-        <button id="btnGoChamp" data-i="mChamp">🏆 Campeonato (16 · playoffs)</button>
-        <button id="btnGoLeague" data-i="mLeague">🏟️ Liga (256 · ascensos/descensos)</button>
-        <button id="btnGoStats" data-i="mStats">🏆 Estadísticas</button>
-        <button id="btnGoColors" data-i="mColors">🎨 Estadísticas de colores</button>
-        <button id="btnGoSets" data-i="mSets">🃏 Ver sets</button>
-        <button id="btnGoCol" data-i="mCol">📚 Colección</button>
-        <button id="btnGoTut" data-i="mTut">🎓 Tutorial: cómo se juega</button>
-        <button id="btnGoSettings" data-i="mSettings">⚙️ Ajustes</button>
-        <button id="btnGoLiga" data-i="mLiga">🏟️ Simulación CPU (6 duelos)</button>
-        <button id="btnGoWatch" data-i="mWatch">👀 Ver duelo CPU vs CPU</button>
-        <button id="btnNetCreate" data-i="netCreate">🎮 Crear sala (online)</button>
-        <button id="btnNetJoin" data-i="netJoin">🔑 Unirse a sala</button>
+      <div class="menubtns menustack" id="menuBtns">
+        <div class="menugrp">
+          <span class="menugrph" data-i="grpPlay">Jugar</span>
+          <div class="menugrid">
+            <button class="primary" id="btnGoSetup" data-i="mPlay" data-it="mPlayT">⚔ Duelo</button>
+            <button id="btnGoChamp" data-i="mChamp" data-it="mChampT">🏆 Campeonato</button>
+            <button id="btnGoLeague" data-i="mLeague" data-it="mLeagueT">🏟️ Liga</button>
+          </div>
+        </div>
+        <div class="menugrp">
+          <span class="menugrph" data-i="grpOnline">Online</span>
+          <div class="menugrid">
+            <button id="btnNetCreate" data-i="netCreate" data-it="netCreateT">🎮 Crear sala</button>
+            <button id="btnNetJoin" data-i="netJoin" data-it="netJoinT">🔑 Unirse</button>
+          </div>
+        </div>
+        <div class="menugrp">
+          <span class="menugrph" data-i="grpWatch">Ver</span>
+          <div class="menugrid">
+            <button id="btnGoWatch" data-i="mWatch" data-it="mWatchT">👀 Duelo CPU vs CPU</button>
+            <button id="btnGoLiga" data-i="mLiga" data-it="mLigaT">🏟️ Simulación CPU</button>
+          </div>
+        </div>
+        <div class="menugrp">
+          <span class="menugrph" data-i="grpData">Datos</span>
+          <div class="menugrid">
+            <button id="btnGoCol" data-i="mCol" data-it="mColT">📚 Colección</button>
+            <button id="btnGoSets" data-i="mSets" data-it="mSetsT">🃏 Sets</button>
+            <button id="btnGoStats" data-i="mStats" data-it="mStatsT">🏆 Estadísticas</button>
+            <button id="btnGoColors" data-i="mColors" data-it="mColorsT">🎨 Colores</button>
+          </div>
+        </div>
+        <div class="menugrp">
+          <span class="menugrph" data-i="grpHelp">Ayuda</span>
+          <div class="menugrid">
+            <button id="btnGoTut" data-i="mTut" data-it="mTutT">🎓 Tutorial</button>
+            <button id="btnGoSettings" data-i="mSettings" data-it="mSettingsT">⚙️ Ajustes</button>
+          </div>
+        </div>
       </div>
       <div class="fan fan-r"><img alt=""></div>
     </div>
@@ -2877,6 +2910,14 @@ const I18N = {
   es: {
     handLbl: 'TU MANO', lblDeck: 'MAZO', lblDiscard: 'DESCARTE', lblLives: 'VIDAS',
     menuSub: 'Duelo de CAMPEONAS, DIOSAS y BAKEMONO · ',
+    grpPlay: 'Jugar', grpOnline: 'Online', grpWatch: 'Ver', grpData: 'Datos', grpHelp: 'Ayuda',
+    mPlayT: 'Duelo contra la CPU: eliges dos facciones y un rival',
+    mChampT: 'Campeonato de 16 jugadores con playoffs', mLeagueT: 'Liga de 256 jugadores con ascensos y descensos',
+    netCreateT: 'Abre una sala y comparte el código de 4 caracteres', netJoinT: 'Entra en una sala con el código que te pasen',
+    mWatchT: 'Elige dos rivales y míralos jugar en vivo, con las manos a la vista', mLigaT: 'Simulación rápida de 6 duelos de CPU',
+    mColT: 'Las cartas que ya has visto', mSetsT: 'Galería de los 6 sets, facción por facción',
+    mStatsT: 'Tus duelos, victorias y rachas', mColorsT: 'Reparto de colores: solos, parejas y sets',
+    mTutT: 'Tutorial: cómo se juega, paso a paso', mSettingsT: 'Modo, defensa, robo, energía inicial, turnos y dificultad',
     mSettings: '⚙️ Ajustes',
     setTitle: '⚙️ Ajustes',
     setIntro: 'Elige cómo se resuelven los duelos. El modo, las vidas, la energía inicial y el orden de turnos se aplican al siguiente duelo; la defensa y el robo, al instante.',
@@ -2947,8 +2988,8 @@ const I18N = {
     setReset: 'Restablecer',
     setClose: 'Cerrar',
     setApplied: 'Ajustes aplicados. El modo y las vidas cambian en el próximo duelo.',
-    mPlay: '⚔ Duelo (empezar partida)', mChamp: '🏆 Campeonato (16 · playoffs)', mTut: '🎓 Tutorial: cómo se juega',
-    mSets: '🃏 Ver sets', mStats: '🏆 Estadísticas',
+    mPlay: '⚔ Duelo', mChamp: '🏆 Campeonato', mTut: '🎓 Tutorial',
+    mSets: '🃏 Sets', mStats: '🏆 Estadísticas',
     mCol: '📚 Colección', colTitle: '📚 Colección',
     colHaveLbl: 'cartas distintas', colFoilsLbl: 'foils', colPacksLbl: 'sobres sin abrir',
     colOpen: '📦 Abrir sobre', colNoPack: 'No tienes sobres: gana un duelo para conseguir uno.',
@@ -2979,7 +3020,7 @@ const I18N = {
     dlPack2: 'Abre 2 sobres', dlNoHurt: 'Gana un duelo sin perder ninguna vida',
     dlFac: 'Gana un duelo con {f}', dlClaimed: '¡+{n} sobre(s)!',
     endPackP: '🏅 ¡Victoria! Has ganado un sobre para la colección.', endPackOpen: '📦 Abrir sobre',
-    mQuit: '⏻ Salir del juego',
+    mQuit: '⏻ Salir',
     quitHint: 'Cierra la pestaña o la ventana para salir.', quitArm: 'Salir del juego',
     quitAgain: 'pulsa otra vez para salir',
     setsPreview: 'VISTA PREVIA', setsClear: 'Limpiar', setsSearchPh: 'Buscar por nombre, tipo o número…',
@@ -3114,8 +3155,8 @@ unitChoiceTitle: 'Elige una unidad para descartar',
     lockB3: '🔒 {f} {s}: juega {n} partidas con el Set 02 de {f} ({p}/{n})',
     lockB: '🔒 {f} {s}: juega {n} partidas con {f} ({p}/{n})', waits: ' te espera en la mesa.',
     set01: 'Set 01', set02: 'Set 02', set03: 'Set 03', set04: 'Set 04', set05: 'Set 05', set06: 'Set 06',
-    mLeague: '🏟️ Liga (256 · ascensos/descensos)', leagueTitle: 'LIGA BAKEMONO · 256 JUGADORES',
-    mReset: '🗑️ Resetear juego', rsT: '⚠️ Resetear TODO',
+    mLeague: '🏟️ Liga', leagueTitle: 'LIGA BAKEMONO · 256 JUGADORES',
+    mReset: '🗑️ Resetear', rsT: '⚠️ Resetear TODO',
     rsP: 'Se borrará <b>TODO</b> tu progreso: colección, sobres, polvo, victorias, derrotas, ELO, estadísticas, liga de CPUs y campeonato. No se puede deshacer.',
     rsAsk: 'Para confirmar, escribe <b>RESET</b> en mayúsculas:',
     rsGo: 'Resetear definitivamente', rsCancel: 'Cancelar',
@@ -3124,8 +3165,8 @@ unitChoiceTitle: 'Elige una unidad para descartar',
     optimaName: 'Óptima', optimaDesc: 'Juega por ti con lo mejor de todas: despliegue ambicioso, caza GUARDIANES y auras, remata lo matable, INTERCEPT siempre y mulligan lista.', autoTitle: 'Que la CPU juegue por ti (toma el mando en tu próximo turno)', autoOn: '🤖 La ÓPTIMA juega tus turnos desde ahora.', autoOff: '🤖 Vuelves a jugar tú.',
     speedTitle: 'Velocidad de la partida', speed1: 'Sin nadie jugando: acelerar la partida', speed2: 'Pausas a la mitad y dados el doble de rápidos', speed4: 'Sin pausas: los dados salen con su resultado al instante',
 
-    mWatch: '👀 Ver duelo CPU vs CPU', watchSub: 'Elige dos rivales para verlos jugar en vivo (sus manos quedan visibles y el resultado cuenta en tus estadísticas).',
-    netCreate: '🎮 Crear sala', netJoin: '🔑 Unirse a sala',
+    mWatch: '👀 Duelo CPU vs CPU', watchSub: 'Elige dos rivales para verlos jugar en vivo (sus manos quedan visibles y el resultado cuenta en tus estadísticas).',
+    netCreate: '🎮 Crear sala', netJoin: '🔑 Unirse',
     netTitle: '🎮 Duelo online', netSubCreate: 'Sala creada: pásale el código a tu amigo.', netSubJoin: 'Escribe el código que te pasen.',
     netShareHint: 'Tu amigo entra con este código (o con el enlace, que ya lo lleva).',
     netCopyCode: '📋 Copiar código', netCopyLink: '🔗 Copiar enlace',
@@ -3165,7 +3206,7 @@ unitChoiceTitle: 'Elige una unidad para descartar',
     lgRankNote: 'WR por CPU sobre todas las tandas simuladas. El ELO ya refleja estos resultados (K=32 por duelo); un WR muy alto/bajo sostenido empuja el ELO hasta equilibrarse.',
     lgStatGames: 'Tandas simuladas', lgStatWins: 'Más victorias en liga:', lgStatStreak: 'Mejor racha de vidas:',
 
-    mLeague: '🏟️ Liga (256 · ascensos/descensos)', leagueTitle: 'LIGA BAKEMONO · 256 JUGADORES',
+    mLeague: '🏟️ Liga', leagueTitle: 'LIGA BAKEMONO · 256 JUGADORES',
     leagueSub: '256 jugadores (tú + 255 CPUs) · 32 divisiones de 8 · 7 partidos por temporada (todos contra todos) · Los 2 primeros ascienden, los 2 últimos descienden · Empiezas en la liga más baja.',
     leagueSeason: 'Temporada {n}', leagueDivision: 'División {n} (Liga {tier})',
     leagueStandings: 'Clasificación', leagueMatches: 'Partidos', leagueDivisions: 'Divisiones', leagueHistory: 'Historial', leagueHistoryEmpty: 'Todavía no hay temporadas archivadas. Termina una temporada para guardar aquí tu posición y resultados.', leagueHistoryRank: 'Puesto final', leagueHistoryRecord: 'Balance', leagueHistoryPoints: 'Puntos', leagueHistoryDivision: 'División', leaguePlay: '▶ Jugar mi partido', leagueSimRest: '⚡ Simular resto', leagueNextSeason: '▶ Siguiente temporada', leagueOut: 'Salir',
@@ -3181,8 +3222,8 @@ unitChoiceTitle: 'Elige una unidad para descartar',
     drawNote: 'Tu partido acabó en EMPATE: el pase se decidió por sorteo.',
     stHead: ['Partidas', 'V', 'D', 'E', 'ELO'], stYou: 'Tú', stVs: 'vs ', stAvg: 'Turno medio: <b>{t}</b> · Duración media: <b>{m}</b>',
     stNoGames: 'Sin partidas todavía.',
-    mColors: '🎨 Estadísticas de colores', colorsTitle: '🎨 Colores: solo, combos y sets',
-    stPlayer: '👤 Estadísticas del jugador', stColors: '🎨 Estadísticas de colores',
+    mColors: '🎨 Colores', colorsTitle: '🎨 Colores: solo, combos y sets',
+    stPlayer: '👤 Estadísticas del jugador', stColors: '🎨 Colores',
     mtTitle: 'META — tus colores y combos', mtFac: 'Color', mtPair: 'Combinación', mtSet: 'Set', mtWR: 'win%',
     tutTitle: 'Cómo jugar · BAKEMONO', tutKbd: '← → navegar · Intro: siguiente · Esc: cerrar',
     gpOn: '🎮 Mando conectado', gpOff: 'Mando desconectado',
@@ -3278,6 +3319,14 @@ tut: [
   en: {
     handLbl: 'YOUR HAND', lblDeck: 'DECK', lblDiscard: 'DISCARD', lblLives: 'LIVES',
     menuSub: 'Duel of CHAMPIONS, GODDESSES and BAKEMONO · ',
+    grpPlay: 'Play', grpOnline: 'Online', grpWatch: 'Watch', grpData: 'Data', grpHelp: 'Help',
+    mPlayT: 'Duel against the CPU: pick two factions and a rival',
+    mChampT: '16-player championship with play-offs', mLeagueT: '256-player league with promotion and relegation',
+    netCreateT: 'Open a room and share its 4-letter code', netJoinT: 'Join a room with the code you were given',
+    mWatchT: 'Pick two rivals and watch them play live, hands visible', mLigaT: 'Quick simulation of 6 CPU duels',
+    mColT: 'The cards you have already seen', mSetsT: 'Gallery of all 6 sets, faction by faction',
+    mStatsT: 'Your duels, wins and streaks', mColorsT: 'Colour spread: solo, pairs and sets',
+    mTutT: 'Tutorial: how to play, step by step', mSettingsT: 'Mode, defence, draw, starting energy, turns and difficulty',
     mSettings: '⚙️ Settings',
     setTitle: '⚙️ Settings',
     setIntro: 'Choose how duels resolve. Mode, lives, starting energy and turn order apply to the next duel; defense and draw apply immediately.',
@@ -3348,8 +3397,8 @@ tut: [
     setReset: 'Reset',
     setClose: 'Close',
     setApplied: 'Settings applied. Mode and lives change next duel.',
-    mPlay: '⚔ Start game', mChamp: '🏆 Championship (16 · playoffs)', mTut: '🎓 Tutorial: how to play',
-    mSets: '🃏 Browse sets', mStats: '🏆 Statistics',
+    mPlay: '⚔ Start game', mChamp: '🏆 Championship', mTut: '🎓 Tutorial',
+    mSets: '🃏 Sets', mStats: '🏆 Statistics',
     mCol: '📚 Collection', colTitle: '📚 Collection',
     colHaveLbl: 'distinct cards', colFoilsLbl: 'foils', colPacksLbl: 'unopened packs',
     colOpen: '📦 Open pack', colNoPack: 'No packs left: win a duel to earn one.',
@@ -3380,7 +3429,7 @@ tut: [
     dlPack2: 'Open 2 packs', dlNoHurt: 'Win a duel without losing a life',
     dlFac: 'Win a duel with {f}', dlClaimed: '+{n} pack(s)!',
     endPackP: '🏅 Victory! You earned a booster pack for your collection.', endPackOpen: '📦 Open pack',
-    mQuit: '⏻ Quit game',
+    mQuit: '⏻ Quit',
     quitHint: 'Close the tab or window to exit.', quitArm: 'Quit game',
     quitAgain: 'press again to quit',
     setsPreview: 'PREVIEW', setsClear: 'Clear', setsSearchPh: 'Search by name, type or number…',
@@ -3409,7 +3458,7 @@ tut: [
     hp6: '<b>SWORD / MAGIC:</b> every card attacks with its LEFT circle and defends with its RIGHT one, which is always the other type. When attacking, <b>the defender picks who blocks</b>: only cards defending with that same type count, or <b>VERSATILE</b> (always legal, rolling the die of the attacked type). With no legal card the hit lands on their <b>FAME</b>, and fame only takes <b>one hit per turn</b>. <b>ATK ≥ DEF</b> (per Settings) discards the defender with its GODDESS.',
     hp7: '<b>You lose</b> when you run out of lives (the deck never runs out: if emptied, the discard pile is shuffled back into the deck). At 0 lives you play one extra LAST TURN before falling (draws are possible).',
     hp7b: '<b>Courts and sets</b>: all 6 sets are available from the start; no unlocks or rewards. <b>Alternate turns</b> (Settings): the initiative token passes to the other player each round. Both draw and place energy when the round opens; then attacks alternate: the token player attacks, then the opponent, then the first player... one unit per attack. If one cannot attack, they pass; if the other still can, they keep attacking. The round ends when neither can attack; at the end of the round, anyone at 0 lives falls, with no Last Turn. You cannot pass while a legal attack remains.',
-    mPlay: '⚔ Duel (start game)',
+    mPlay: '⚔ Duel',
     hp8: 'Hover over any card to see it enlarged. With a gamepad the gold ring shows where you are: <b>A</b> pick · <b>B</b> back · <b>X</b> pin the card · <b>Y</b> / <b>LB·RB</b> switch zone · <b>RT</b> main action · <b>START</b> this help · <b>L3</b> fullscreen.', btnGotIt: 'Got it',
     hdNew: 'New game', hdSurr: 'Surrender',
     surrAsk: 'Are you sure you want to surrender? It counts as a loss and ends the duel.',
@@ -3515,8 +3564,8 @@ tut: [
     lockB3: '🔒 {f} {s}: play {n} games with the Set 02 of {f} ({p}/{n})',
     lockB: '🔒 {f} {s}: play {n} games with {f} ({p}/{n})', waits: ' awaits you at the table.',
     set01: 'Set 01', set02: 'Set 02', set03: 'Set 03', set04: 'Set 04', set05: 'Set 05', set06: 'Set 06',
-    mLeague: '🏟️ League (256 · promotion/relegation)', leagueTitle: 'BAKEMONO LEAGUE · 256 PLAYERS',
-    mReset: '🗑️ Reset game', rsT: '⚠️ Reset EVERYTHING',
+    mLeague: '🏟️ League', leagueTitle: 'BAKEMONO LEAGUE · 256 PLAYERS',
+    mReset: '🗑️ Reset', rsT: '⚠️ Reset EVERYTHING',
     rsP: 'This erases <b>ALL</b> your progress: collection, packs, dust, wins, losses, ELO, statistics, the CPU league and the championship. It cannot be undone.',
     rsAsk: 'To confirm, type <b>RESET</b> in capitals:',
     rsGo: 'Reset permanently', rsCancel: 'Cancel',
@@ -3525,8 +3574,8 @@ tut: [
     optimaName: 'Optima', optimaDesc: 'Plays for you with the best of all: greedy deployment, hunts GUARDIANS and auras, finishes what it can kill, always INTERCEPTs, smart mulligan.', autoTitle: 'Let the CPU play for you (takes over on your next turn)', autoOn: '🤖 OPTIMA plays your turns from now on.', autoOff: '🤖 You are playing again.',
     speedTitle: 'Match speed', speed1: 'Nobody playing by hand: speed the match up', speed2: 'Half the pauses and dice twice as fast', speed4: 'No pauses: dice show their result instantly',
 
-    mWatch: '👀 Watch CPU vs CPU duel', watchSub: 'Pick two rivals to watch them play live (their hands stay visible and the result counts toward your stats).',
-    netCreate: '🎮 Create room', netJoin: '🔑 Join room',
+    mWatch: '👀 CPU vs CPU duel', watchSub: 'Pick two rivals to watch them play live (their hands stay visible and the result counts toward your stats).',
+    netCreate: '🎮 Create room', netJoin: '🔑 Join',
     netTitle: '🎮 Online duel', netSubCreate: 'Room created: give the code to your friend.', netSubJoin: 'Type the code you were given.',
     netShareHint: 'Your friend joins with this code (or with the link, which already carries it).',
     netCopyCode: '📋 Copy code', netCopyLink: '🔗 Copy link',
@@ -3566,7 +3615,7 @@ tut: [
     lgRankNote: 'CPU winrate across all simulated batches. ELO already reflects these results (K=32 per duel); a sustained very high/low WR pushes ELO until it balances.',
     lgStatGames: 'Batches simulated', lgStatWins: 'Most league wins:', lgStatStreak: 'Best life streak:',
 
-    mLeague: '🏟️ League (256 · promotion/relegation)', leagueTitle: 'BAKEMONO LEAGUE · 256 PLAYERS',
+    mLeague: '🏟️ League', leagueTitle: 'BAKEMONO LEAGUE · 256 PLAYERS',
     leagueSub: '256 players (you + 255 CPUs) · 32 divisions of 8 · 7 matches per season (round-robin) · Top 2 promote, bottom 2 relegate · You start in the lowest league.',
     leagueSeason: 'Season {n}', leagueDivision: 'Division {n} (League {tier})',
     leagueStandings: 'Standings', leagueMatches: 'Matches', leagueDivisions: 'Divisions', leagueHistory: 'History', leagueHistoryEmpty: 'No archived seasons yet. Finish a season to save your final position and results here.', leagueHistoryRank: 'Final place', leagueHistoryRecord: 'Record', leagueHistoryPoints: 'Points', leagueHistoryDivision: 'Division', leaguePlay: '▶ Play my match', leagueSimRest: '⚡ Simulate rest', leagueNextSeason: '▶ Next season', leagueOut: 'Leave',
@@ -3582,8 +3631,8 @@ tut: [
     drawNote: 'Your match ended in a DRAW: the pass was decided by a coin flip.',
     stHead: ['Games', 'W', 'L', 'D', 'ELO'], stYou: 'You', stVs: 'vs ', stAvg: 'Avg turn: <b>{t}</b> · Avg duration: <b>{m}</b>',
     stNoGames: 'No games yet.',
-    mColors: '🎨 Color statistics', colorsTitle: '🎨 Colors: solo, pairs and sets',
-    stPlayer: '👤 Player statistics', stColors: '🎨 Color statistics',
+    mColors: '🎨 Colors', colorsTitle: '🎨 Colors: solo, pairs and sets',
+    stPlayer: '👤 Player statistics', stColors: '🎨 Colors',
     mtTitle: 'META — your colors and combos', mtFac: 'Color', mtPair: 'Pair', mtSet: 'Set', mtWR: 'win%',
     tutTitle: 'How to play · BAKEMONO', tutKbd: '← → navigate · Enter: next · Esc: close',
     gpOn: '🎮 Gamepad connected', gpOff: 'Gamepad disconnected',
@@ -3735,6 +3784,7 @@ addEventListener('scroll', cpuTipOff, true);        // ni al desplazar la págin
 function applyI18n() {
   document.documentElement.lang = LANG;
   document.querySelectorAll('[data-i]').forEach(n => { n.innerHTML = T(n.getAttribute('data-i')); });
+  document.querySelectorAll('[data-it]').forEach(n => { n.title = T(n.getAttribute('data-it')); });   // tooltips
   $('langEs').classList.toggle('on', LANG === 'es');
   $('langEn').classList.toggle('on', LANG === 'en');
   ['btnQuit', 'btnQuit2'].forEach(id => { const b = $(id); if (b) b.title = T('quitArm'); });
