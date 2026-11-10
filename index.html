@@ -83,8 +83,16 @@
   #oppHandFan.spec-open .mini-back { width: 80px; margin: 0 -20px; }
   #myHand.spec-open { align-items: flex-end; }
   #myHand.spec-open .hcard { width: 108px; margin: 0 -27px; }
-  #oppHandFan.spec-open .card { width: 120px; margin: 0 -30px; }
-  #oppHandFan.spec-open .card:hover { z-index: var(--z-overlay); position: relative; }
+  /* Mano del RIVAL en el espectador: cartas EN FILA, sin solaparse. Antes iban a
+     120 px con -30 px de margen (media carta tapada por la siguiente): los textos
+     centrados de cada carta salían cortados y mezclados con los del vecino, y la
+     última se metía debajo del retrato. En fila se leen todas; el hover las
+     agranda para mirarlas de cerca. */
+  #oppHandFan.spec-open { column-gap: 3px; align-items: flex-start; }
+  #oppHandFan.spec-open .card { width: 54px; margin: 0; flex: 0 0 auto;
+    transform-origin: 50% 100%; transition: transform .12s ease; }
+  #oppHandFan.spec-open .card:hover { transform: scale(2.35) translateY(-3px);
+    z-index: var(--z-overlay); position: relative; }
   #myHand.spec-open .hcard .card:hover { z-index: var(--z-overlay); position: relative; }
   /* visor FIJO de la galería de sets (a la izquierda, sin zoom flotante) */
   .sets-flex { display: flex; gap: 20px; align-items: stretch; flex: 1; min-height: 0; }
@@ -386,6 +394,9 @@ cambia a auto). El contenido cabe by design en 1280×720+ */
   .card.sel img { outline: 4px solid var(--gold); outline-offset: 2px;
     box-shadow: 0 0 0 6px rgba(232,185,49,.34), 0 0 26px 8px rgba(232,185,49,.62),
                 0 6px 12px rgba(0,0,0,.6), 0 18px 30px rgba(0,0,0,.45); }
+  /* en una carta GIRADA el arte ocupa la mitad de abajo de la casilla: llevar el ✓
+     arriba lo dejaba flotando en el hueco vacío */
+  .card.tapped.sel::before { top: auto; bottom: 3%; right: 1%; }
   .card.sel::before { content: '✓'; position: absolute; top: 5px; right: 5px; z-index: 30;
     width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
     font: 800 16px/1 sans-serif; color: #06222A; background: linear-gradient(180deg, #B9F5FF, var(--gold));
@@ -401,6 +412,20 @@ cambia a auto). El contenido cabe by design en 1280×720+ */
   @keyframes shakeIt { 0%,100% { transform: translate(0,0) } 20% { transform: translate(-3px,2px) } 40% { transform: translate(3px,-2px) } 60% { transform: translate(-2px,1px) } 80% { transform: translate(2px,1px) } }
   .shakeit { animation: shakeIt .45s ease; }
   /* ---- ataque: la carta VUELA hasta su objetivo y vuelve (clone fixed sobre la mesa) ---- */
+  /* la carta atacante se LANZA en 3D sobre su objetivo: sube hacia la cámara
+     (+10%) y vuelve; la flecha dice quién ataca a quién */
+  .slot.striking, .card.striking { z-index: var(--z-overlay); position: relative;
+    filter: drop-shadow(0 16px 22px rgba(0,0,0,.55)); }
+  .slot.striking .card img, .card.striking img { outline: 3px solid var(--gold); outline-offset: 2px; }
+  .strikefx { position: fixed; left: 0; top: 0; width: 100%; height: 100%;
+    pointer-events: none; z-index: 45; overflow: visible;
+    opacity: 0; transition: opacity .14s ease; }
+  .strikefx.on { opacity: 1; }
+  .striketgt { position: fixed; pointer-events: none; z-index: 46; border-radius: 9px;
+    box-shadow: 0 0 0 3px rgba(224,74,58,.95), 0 0 26px rgba(224,74,58,.75);
+    animation: tgtPulse .55s ease-in-out infinite alternate; }
+  @keyframes tgtPulse { from { box-shadow: 0 0 0 3px rgba(224,74,58,.9), 0 0 18px rgba(224,74,58,.55); }
+                        to   { box-shadow: 0 0 0 4px rgba(255,120,90,1), 0 0 34px rgba(224,74,58,.95); } }
   .flyatk { position: fixed; z-index: 330; pointer-events: none;
     transition: left .3s cubic-bezier(.3,.7,.3,1), top .3s cubic-bezier(.3,.7,.3,1), transform .3s ease; }
   .flyatk img { width: 100%; display: block; border-radius: 7px;
@@ -868,6 +893,15 @@ cambia a auto). El contenido cabe by design en 1280×720+ */
   .flycard img { width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 7px;
     box-shadow: 0 8px 22px rgba(0,0,0,.6); }
   .flycard .flypilot { position: absolute; inset: 0; opacity: .8; }
+  /* conversión en energía: clon con dos caras que se GIRA (anverso → dorso) */
+  .flycard .flyflip { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; }
+  .flycard .flyflip img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+    border-radius: 7px; backface-visibility: hidden; -webkit-backface-visibility: hidden;
+    box-shadow: 0 10px 26px rgba(0,0,0,.65); }
+  .flycard .flyflip .ff-back { transform: rotateY(180deg); }
+  .arriving { will-change: transform; }
+  /* gastar energía: la carta se GIRA, no cambia de golpe */
+  #myEnergy .ecard .card img, #oppEnergy .ecard .card img { transition: transform .26s cubic-bezier(.34,1.3,.64,1); }
   @keyframes floatUp { 0% { opacity: 0; transform: translate(-50%,14px) scale(.6); } 25% { opacity: 1; transform: translate(-50%,0) scale(1.15); } 100% { opacity: 0; transform: translate(-50%,-46px) scale(1); } }
   /* modos de juego */
   .modes { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 10px 0; }
@@ -2314,7 +2348,7 @@ body.chibi .card.sel::before { background: linear-gradient(180deg, #FFD9E7, var(
   <div class="box">
     <div class="langpick"><button id="langEs" title="Español"><span class="fl fl-es"></span>ES</button><button id="langEn" title="English"><span class="fl fl-en"></span>EN</button></div>
     <h1 class="klogo" aria-label="BAKEMONO"><span>BAKEMONO</span></h1>
-    <p><span data-i="menuSub">Duelo de CHAMPIONS, GODDESSES y BAKEMONO · </span><span id="menuMode"></span><span id="menuElo"></span> · <span id="buildTag" title="versión de esta copia">build 20261109-1540</span></p>
+    <p><span data-i="menuSub">Duelo de CHAMPIONS, GODDESSES y BAKEMONO · </span><span id="menuMode"></span><span id="menuElo"></span> · <span id="buildTag" title="versión de esta copia">build 20261110-0924</span></p>
     <div class="menudeco" aria-hidden="true">
       <div class="fan fan-l"><img alt=""></div>
       <div class="menubtns">
@@ -4584,6 +4618,104 @@ function flyToDiscard(card, P, src, pilot) {
     setTimeout(() => d.remove(), 720);
   } catch (e) { /* la animación nunca puede romper la partida */ }
 }
+/* ---------- VUELO DE CARTAS ENTRE ZONAS ----------
+   Bajar a la mesa, convertir en energía o robar era un cambio de estado + un
+   repintado: la carta aparecía ya en su sitio nuevo, sin recorrido, y no se
+   entendía de dónde había salido. Ahora la acción apunta de dónde sale la
+   carta (noteMove) y `render()` la hace viajar hasta su hueco nuevo:
+     · mesa / mano → FLIP sobre el nodo real (nada de clones tapando la mesa)
+     · reserva de energía → clon que se GIRA y cae boca abajo
+     · descarte → flyToDiscard, que ya existía */
+let MOVES = new Map();   // carta → { rect de salida, kind }
+function cardNodeIn(root, card) {
+  return [...root.querySelectorAll('.card')].find(n => n.__card === card) || null;
+}
+function findCardNode(card) {
+  if (!card) return null;
+  for (const sel of ['myHand', 'oppHandFan', 'myBattle', 'oppBattle', 'myEnergy', 'oppEnergy']) {
+    const z = $(sel);
+    const n = z && cardNodeIn(z, card);
+    if (n) return n;
+  }
+  return null;
+}
+function noteMove(card, src, kind) {
+  try {
+    if (!card || (typeof SIM !== 'undefined' && SIM.FAST)) return;
+    const r = src && src.getBoundingClientRect ? src.getBoundingClientRect() : src;
+    if (!r || !r.width) return;
+    MOVES.set(card, { rect: { left: r.left, top: r.top, width: r.width, height: r.height }, kind: kind || 'board' });
+  } catch (e) { /* la animación nunca puede romper la partida */ }
+}
+function flushMoves() {
+  if (!MOVES.size) return;
+  const moves = MOVES; MOVES = new Map();
+  // hueco actual de cada carta: su casilla, su hueco de energía, su mini de piloto…
+  const hosts = new Map();
+  document.querySelectorAll('#myHand .card, #oppHandFan .card, #myBattle .card, #oppBattle .card, #myEnergy .card, #oppEnergy .card')
+    .forEach(n => {
+      const c = n.__card;
+      if (c && !hosts.has(c)) hosts.set(c, n.closest('.pilotmini, .slot, .ecard, .hcard') || n);
+    });
+  for (const [card, mv] of moves) {
+    const host = hosts.get(card);
+    if (!host || !host.isConnected) continue;
+    if (mv.kind === 'energy') flyFaceDown(host, mv.rect, card);
+    else flipIn(host, mv.rect);
+  }
+}
+/* la carta real viaja de su sitio viejo al nuevo (FLIP: sin clones de por medio) */
+function flipIn(host, r0) {
+  try {
+    const r1 = host.getBoundingClientRect();
+    if (!r1.width || !r0.width) return;
+    const ms = escalaMs(300);
+    if (!ms) return;
+    const dx = r0.left - r1.left, dy = r0.top - r1.top;
+    const sc = Math.min(1.8, Math.max(.22, r0.width / r1.width));
+    host.style.transformOrigin = '0 0';
+    host.style.transition = 'none';
+    host.style.transform = `translate(${dx.toFixed(1)}px,${dy.toFixed(1)}px) scale(${sc.toFixed(3)})`;
+    host.style.zIndex = 'var(--z-overlay)';
+    host.classList.add('arriving');
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      host.style.transition = `transform ${ms}ms cubic-bezier(.2,.78,.25,1)`;
+      host.style.transform = '';
+      setTimeout(() => {
+        host.classList.remove('arriving');
+        host.style.transition = ''; host.style.transform = ''; host.style.transformOrigin = ''; host.style.zIndex = '';
+      }, ms + 60);
+    }));
+  } catch (e) {}
+}
+/* carta boca arriba que se convierte en energía: vuela y se gira para mostrar el dorso */
+function flyFaceDown(host, r0, card) {
+  try {
+    const r1 = host.getBoundingClientRect();
+    if (!r1.width) return;
+    const ms = escalaMs(420);
+    if (!ms) return;
+    host.style.visibility = 'hidden';   // el hueco se rellena al aterrizar
+    const d = el('div', 'flycard flydown');
+    d.style.cssText = `left:${r0.left}px;top:${r0.top}px;width:${r0.width}px;height:${r0.height}px;transition:none`;
+    const inner = el('div', 'flyflip');
+    const f1 = el('img'); f1.src = cardFaceSrc(card); f1.className = 'ff-front';
+    const f2 = el('img'); f2.src = cardBackSrc(); f2.className = 'ff-back';
+    inner.appendChild(f1); inner.appendChild(f2); d.appendChild(inner);
+    document.body.appendChild(d);
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      d.style.transition = `left ${ms}ms cubic-bezier(.2,.78,.25,1), top ${ms}ms cubic-bezier(.2,.78,.25,1), width ${ms}ms ease, height ${ms}ms ease`;
+      inner.style.transition = `transform ${ms}ms cubic-bezier(.4,.1,.3,1)`;
+      d.style.left = r1.left + 'px'; d.style.top = r1.top + 'px';
+      d.style.width = r1.width + 'px'; d.style.height = r1.height + 'px';
+      inner.style.transform = 'rotateY(180deg)';
+    }));
+    setTimeout(() => {
+      d.remove();
+      if (host.isConnected) host.style.visibility = '';
+    }, ms + 60);
+  } catch (e) { try { host.style.visibility = ''; } catch (e2) {} }
+}
 function handRectOf(P) { // rect aproximado de la mano de P (para descartes HEX)
   const fan = $(P === G.O ? 'oppHandFan' : 'myHand');
   const r = fan.getBoundingClientRect();
@@ -4621,6 +4753,7 @@ function deployUnit(P, c, enemyOf, mechTarget, opts = {}) {
         : units(P).find(u => u.card.type === 'MECH' && !u.pilot))
     : null;
   if (c.type === 'PILOT' && !mech) return null;
+  const fromNode = findCardNode(c);   // de dónde sale la carta (mano): lo usa el vuelo a la mesa
   const nSac = free ? 0 : payCost(P, c);
   P.hand.splice(P.hand.indexOf(c), 1);
   if (isUnitCard(c) && !free) P.deploysThisTurn = (P.deploysThisTurn ?? 0) + 1; // LCG §7.2
@@ -4660,6 +4793,7 @@ function deployUnit(P, c, enemyOf, mechTarget, opts = {}) {
     const side = P === G.P ? 'b' : 'a'; // G.P = CPU de abajo (b)
     SIM.cur.plays[side].push({ n: c.name, f: c.faction, s: c.set ?? 1, t: c.type, cost: c.cost });
   }
+  noteMove(c, fromNode, 'board');   // la carta viaja de la mano a su casilla
   logLine(msg);
   sfx.deploy();
   return unit;
@@ -4677,9 +4811,11 @@ function createIntercept(P, c) {
   const pilotCard = c.type === 'PILOT' ? c : null;
   const targetMech = pilotCard ? freeMechForReact(P) : null;
   if (pilotCard && !targetMech) return null;
+  const fromNode = findCardNode(c);
   const nSac = payCost(P, c);
   P.hand.splice(P.hand.indexOf(c), 1);
   let unit;
+  noteMove(c, fromNode, 'board');
   if (pilotCard) {
     targetMech.pilot = pilotCard;
     unit = targetMech;
@@ -4905,16 +5041,28 @@ function energySlotFree(P) { return P.eTable.length < MAX_ENERGY; }
 function putAsEnergy(P, card, srcNode) {
   if (!energySlotFree(P) || !card) return false;
   const i = P.hand.indexOf(card); if (i < 0) return false;
+  const fromNode = srcNode || findCardNode(card);
   P.hand.splice(i, 1);
   // se coloca AGOTADA: despierta al empezar tu siguiente turno
   P.eTable.push({ card, tapped: true });
+  noteMove(card, fromNode, 'energy');   // vuela y se gira para quedar boca abajo
   try { shakeNode($(P === G.O ? 'opp' : 'my') + 'Energy'); } catch (e) {}
   return true;
 }
 function drawN(P, n) {
   let k = 0;
-  while (k < n) { const c = drawFromDeck(P); if (!c) break; P.hand.push(c); k++; }
+  while (k < n) {
+    const c = drawFromDeck(P); if (!c) break;
+    P.hand.push(c);
+    noteMove(c, pileRect(P, 'Deck'), 'hand');   // la carta sale del mazo y entra en la mano
+    k++;
+  }
   return k;
+}
+/* rectángulo de un montón (mazo/descarte) de uno de los dos lados */
+function pileRect(P, which) {
+  try { return $(which === 'Deck' ? (P === G.O ? 'oppDeck' : 'myDeck') : (P === G.O ? 'oppDiscard' : 'myDiscard')).getBoundingClientRect(); }
+  catch (e) { return null; }
 }
 // la carta que la IA gasta como energía: la más cara de la mano (la que menos
 // quiere jugar) y, a igualdad, la que menos opciones le da
@@ -4956,8 +5104,7 @@ function cpuGainEnergy(P, pid) {
   while (placed < quota && P.hand.length) {
     const c = cpuEnergyPick(P);
     if (!c) break;
-    P.hand.splice(P.hand.indexOf(c), 1);
-    P.eTable.push({ card: c, tapped: true });   // agotada: disponible el turno siguiente
+    if (!putAsEnergy(P, c)) break;   // agotada: disponible el turno siguiente
     placed++;
   }
   return n;
@@ -4967,7 +5114,12 @@ function drawAsEnergy(P, n) {
   if (!energySlotFree(P)) return 0;
   let k = 0;
   // también agotadas: la energía que robas hoy se gasta mañana
-  while (k < n && energySlotFree(P)) { const c = drawFromDeck(P); if (!c) break; P.eTable.push({ card: c, tapped: true }); k++; }
+  while (k < n && energySlotFree(P)) {
+    const c = drawFromDeck(P); if (!c) break;
+    P.eTable.push({ card: c, tapped: true });
+    noteMove(c, pileRect(P, 'Deck'), 'energy');   // del mazo a la reserva, girándose
+    k++;
+  }
   return k;
 }
 async function playerGainEnergy() {
@@ -4983,8 +5135,7 @@ async function playerGainEnergy() {
     while (placed < quota && P.hand.length) {
       const c = cpuEnergyPick(P);
       if (!c) break;
-      P.hand.splice(P.hand.indexOf(c), 1);
-      P.eTable.push({ card: c, tapped: true });
+      if (!putAsEnergy(P, c)) break;
       placed++;
     }
     G.busy = false;
@@ -4996,8 +5147,7 @@ async function playerGainEnergy() {
     while (placed < quota && P.hand.length) {
       const c = cpuEnergyPick(P);
       if (!c) break;
-      P.hand.splice(P.hand.indexOf(c), 1);
-      P.eTable.push({ card: c, tapped: true });
+      if (!putAsEnergy(P, c)) break;
       placed++;
     }
     render();
@@ -5296,6 +5446,7 @@ function render() {
     // (las VIDAS se atacan clicando al rival: su retrato o su fila de vidas)
     const b2 = el('button'); b2.textContent = T('endAtks'); b2.onclick = () => endMyTurn(); $('actions').appendChild(b2);
   }
+  flushMoves();   // las cartas que cambiaron de zona viajan hasta su sitio nuevo
 }
 function hintText() {
   if (altMyTurn()) {
@@ -5378,6 +5529,7 @@ function drawSide(pre, P, mine) {
     const d = el('div', 'ecard');
     const im = el('img'); im.src = cardBackSrc(); im.draggable = false; im.alt = T('energyT');
     const ce = el('div', 'card' + (e.tapped ? ' tapped' : ''));
+    ce.__card = e.card;   // identidad para las animaciones de movimiento
     ce.appendChild(im);
     ce.title = T('energyCardT') + ' · ' + (e.tapped ? T('lifeT')
       : T('lifeR') + ' · ' + P.eTable.filter(x => !x.tapped).length + ' ' + T('peekReadyMany'));
@@ -5851,83 +6003,147 @@ const tintOf = c => FAC_TINT[c?.faction] ?? null;
 // centro 2D de un polígono proyectado
 const faceCenter = pts => pts.reduce((a, p) => [a[0] + p[0], a[1] + p[1]], [0, 0]).map(v => v / pts.length);
 // dibuja un frame del dado; devuelve el índice de la cara frontal
+/* ---------- DADO 3D: luz de estudio, bisel y pips ----------
+   Mismo motor (poliedros proyectados + pintor), pero el color de cada cara ya
+   no es "más claro cuanto más mira a cámara": sale de una luz FIJA de estudio
+   (difusa + especular Blinn-Phong + rebote del suelo), así que un d12 se lee
+   como un sólido y no como un polígono plano. Cada cara se pinta en dos
+   piezas: el CANTO (polígono exterior redondeado y oscuro: el bisel) y la
+   SUPERFICIE tallada (polígono interior con degradado hacia la luz). TODOS
+   llevan cifra grabada (el d6 también: va con número, no con puntos). */
+const DIE_LIGHT = D3.norm([-0.44, 0.66, 0.61]);
+const DIE_HALF = D3.norm([DIE_LIGHT[0], DIE_LIGHT[1], DIE_LIGHT[2] + 1]); // vista = +z
+const DIE_GRAD = [-0.54, -0.84];   // la luz en pantalla (y hacia abajo)
+const c255 = v => Math.max(0, Math.min(255, Math.round(v)));
+const clamp01 = v => v < 0 ? 0 : v > 1 ? 1 : v;
+/* polígono con esquinas redondeadas: sin esto el dado parece una caja de cartón */
+function roundPolyPath(ctx, pts, r) {
+  const n = pts.length;
+  if (n < 3) return;
+  const mix = (a, b, t) => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t];
+  ctx.beginPath();
+  for (let i = 0; i < n; i++) {
+    const prev = pts[(i + n - 1) % n], cur = pts[i], next = pts[(i + 1) % n];
+    const lp = Math.hypot(cur[0] - prev[0], cur[1] - prev[1]) || 1;
+    const ln = Math.hypot(next[0] - cur[0], next[1] - cur[1]) || 1;
+    const rr = Math.min(r, lp * 0.4, ln * 0.4);
+    const a = mix(cur, prev, rr / lp), b = mix(cur, next, rr / ln);
+    if (i === 0) ctx.moveTo(a[0], a[1]); else ctx.lineTo(a[0], a[1]);
+    ctx.quadraticCurveTo(cur[0], cur[1], b[0], b[1]);
+  }
+  ctx.closePath();
+}
+const insetPoly = (pts, f) => { const c = faceCenter(pts); return pts.map(p => [c[0] + (p[0] - c[0]) * f, c[1] + (p[1] - c[1]) * f]); };
+// dibuja un frame del dado; devuelve el índice de la cara frontal
 function drawDie3DFrame(ctx, S, geo, M, faceNums, restFace, W) {
-  const cx = W / 2, cy = W / 2, R = W * (geo === DICE3D[10] ? 0.42 : 0.36); // el d10 ocupa más lienzo: sus caras son más grandes
+  const off = S.off || [0, 0], sq = S.sq || [1, 1];
+  const cx = W / 2 + off[0], cy = W / 2 + off[1];
+  const R = W * (geo === DICE3D[10] ? 0.42 : 0.36); // el d10 ocupa más lienzo: sus caras son más grandes
   ctx.clearRect(0, 0, W, W);
   const scale = R / Math.max(...geo.V.map(q => D3.len(q))); // una vez por frame, no por vértice
-  const RV = geo.V.map(v => { const r = D3.mVec(M, v); return [cx + r[0] * scale, cy - r[1] * scale, r[2]]; });
+  // MV = vértices en espacio de vista SIN escalar; RV = los mismos proyectados.
+  // Las normales se sacan de MV: si se sacan de RV (x,y en píxeles y z en
+  // unidades del dado) el producto vectorial queda aplastado, TODAS las caras
+  // dan facing ~1 y el dado se ilumina plano, como un cromo.
+  const MV = geo.V.map(v => D3.mVec(M, v));
+  const RV = MV.map(r => [cx + r[0] * scale * sq[0], cy - r[1] * scale * sq[1], r[2]]);
+  const [br, bg, bb] = dieColor(S.kind, S.tint);
+  const dark = 0.299 * br + 0.587 * bg + 0.114 * bb > 165; // tinte claro (shirayuki/kaminari): tinta oscura
+  // 1) sombra de contacto: sin ella el dado flota sobre la mesa
+  const shY = cy + R * 1.16, shR = R * 1.25;
+  const shg = ctx.createRadialGradient(cx, shY, 0, cx, shY, shR);
+  shg.addColorStop(0, 'rgba(0,0,0,.45)'); shg.addColorStop(.5, 'rgba(0,0,0,.2)'); shg.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = shg; ctx.beginPath(); ctx.ellipse(cx, shY, shR, shR * .32, 0, 0, 7); ctx.fill();
+  // 2) caras, de atrás a delante (pintor)
   const faces = geo.F.map((f, i) => {
     const pts = f.map(v => RV[v]);
-    const n = D3.norm(D3.cross(D3.sub(RV[f[1]], RV[f[0]]), D3.sub(RV[f[2]], RV[f[0]])));
+    const n = D3.norm(D3.cross(D3.sub(MV[f[1]], MV[f[0]]), D3.sub(MV[f[2]], MV[f[0]])));
     const z = pts.reduce((a, p) => a + p[2], 0) / pts.length;
     return { i, pts, z, facing: n[2], n };
   }).sort((a, b) => a.z - b.z);
-  const [br, bg, bb] = dieColor(S.kind, S.tint);
-  const lum = 0.299 * br + 0.587 * bg + 0.114 * bb;
-  const dark = lum > 168; // tinte claro (shirayuki/kaminari): números oscuros para leerlos bien
-  // sombra proyectada: elipse suave bajo el dado (asienta la pieza sobre la mesa)
-  const shY = cy + R * 1.1, shR = R * 0.92;
-  const shg = ctx.createRadialGradient(cx, shY, shR * 0.15, cx, shY, shR);
-  shg.addColorStop(0, 'rgba(0,0,0,.38)'); shg.addColorStop(1, 'rgba(0,0,0,0)');
-  ctx.fillStyle = shg; ctx.beginPath(); ctx.ellipse(cx, shY, shR, shR * 0.3, 0, 0, 7); ctx.fill();
+  const bev = Math.max(1.2, W * 0.015);            // ancho del bisel en píxeles
   for (const fc of faces) {
-    const f = Math.max(0, fc.facing);
-    const restBoost = restFace != null && fc.i === restFace; // el resultado siempre legible, sea cual sea su orientación
-    const light = restBoost ? 0.95 : 0.42 + 0.58 * f; // brillo por orientación
-    const path = () => { ctx.beginPath(); fc.pts.forEach((p, i) => i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])); ctx.closePath(); };
-    path();
-    const grd = ctx.createLinearGradient(cx - R, cy - R, cx + R, cy + R);
-    grd.addColorStop(0, `rgb(${Math.min(255, Math.round(br * light * 1.12))},${Math.min(255, Math.round(bg * light * 1.12))},${Math.min(255, Math.round(bb * light * 1.12))})`);
-    grd.addColorStop(1, `rgb(${Math.round(br * light * 0.82)},${Math.round(bg * light * 0.82)},${Math.round(bb * light * 0.82)})`);
-    ctx.fillStyle = grd; ctx.fill();
-    if (f > 0.05) { path(); ctx.fillStyle = `rgba(255,255,255,${(f * f * 0.2).toFixed(3)})`; ctx.fill(); } // especular suave
-    ctx.save(); path(); ctx.clip(); // bisel interior: luz arriba-izquierda, sombra abajo-derecha
-    const bev = ctx.createLinearGradient(0, cy - R, 0, cy + R);
-    bev.addColorStop(0, 'rgba(255,255,255,.32)'); bev.addColorStop(.55, 'rgba(255,255,255,.05)'); bev.addColorStop(1, 'rgba(0,0,0,.32)');
-    ctx.strokeStyle = bev; ctx.lineWidth = Math.max(2, W / 26); ctx.stroke();
-    ctx.restore();
-    path(); ctx.strokeStyle = 'rgba(0,0,0,.5)'; ctx.lineWidth = Math.max(1, W / 64); ctx.stroke(); // arista exterior
+    if (fc.facing <= -0.02) continue;              // cara trasera: no se ve
+    const diff = Math.max(0, D3.dot(fc.n, DIE_LIGHT));
+    const bounce = Math.max(0, -fc.n[1]) * 0.10;   // rebote del suelo
+    const spec = Math.pow(Math.max(0, D3.dot(fc.n, DIE_HALF)), 26);
+    const k = 0.30 + 0.10 * Math.max(0, fc.facing) + 0.72 * diff + bounce;
+    const rT = br * k, gT = bg * k, bT = bb * k;
+    const rH = rT + 255 * spec * 0.55, gH = gT + 255 * spec * 0.55, bH = bT + 255 * spec * 0.55;
+    const c2 = faceCenter(fc.pts);
+    const rad = Math.max(...fc.pts.map(p => Math.hypot(p[0] - c2[0], p[1] - c2[1]))) || R * 0.6;
+    // canto (bisel): el borde exterior del dado, en sombra
+    roundPolyPath(ctx, fc.pts, bev * 1.25);
+    const bevK = dark ? 0.86 : 0.78; // canto apenas más apagado: si no, las caras parecen placas sueltas
+    ctx.fillStyle = `rgb(${c255(rT * bevK)},${c255(gT * bevK)},${c255(bT * (bevK + 0.02))})`;
+    ctx.fill();
+    // superficie tallada: cada cara tiene SU degradado (luz → sombra dentro de la cara)
+    const gr = ctx.createLinearGradient(c2[0] + DIE_GRAD[0] * rad, c2[1] + DIE_GRAD[1] * rad,
+                                        c2[0] - DIE_GRAD[0] * rad, c2[1] - DIE_GRAD[1] * rad);
+    gr.addColorStop(0, `rgb(${c255(rH * 1.08)},${c255(gH * 1.08)},${c255(bH * 1.08)})`);
+    gr.addColorStop(.45, `rgb(${c255(rH)},${c255(gH)},${c255(bH)})`);
+    gr.addColorStop(1, `rgb(${c255(rH * 0.74)},${c255(gH * 0.74)},${c255(bH * 0.78)})`);
+    roundPolyPath(ctx, insetPoly(fc.pts, Math.max(0.90, 1 - bev / rad)), bev * 0.8);
+    ctx.fillStyle = gr; ctx.fill();
+    // cresta del canto: la arista viva que coge la luz
+    ctx.lineWidth = Math.max(1, W / 120);
+    ctx.strokeStyle = `rgba(255,255,255,${clamp01(0.05 + spec * 0.35 + diff * 0.12).toFixed(3)})`;
+    ctx.stroke();
+    // junta con las caras vecinas: sin ella las caras se funden en una mancha
+    roundPolyPath(ctx, fc.pts, bev * 1.25);
+    ctx.strokeStyle = 'rgba(0,0,0,.22)';
+    ctx.lineWidth = Math.max(1, W / 130);
+    ctx.stroke();
   }
-  // UN número por cara: cada cifra se dibuja en el plano de SU cara, recortada
-  // al polígono (queda claramente dentro) y se suprime si otra cara más frontal
-  // ya ocupa esa zona de pantalla (nada se solapa). Orden frontal → trasero.
-  const numThresh = restFace == null ? 0.02 : 0.25; // en giro: todas; en reposo: solo caras suficientemente frontales
-  const settled = restFace != null; // al posar: SOLO el número del resultado; los demás desaparecen
+  // 3) marcas: pips del d6 / cifras grabadas, de delante a atrás
+  const settled = restFace != null; // al posar, la cara del resultado manda
   const taken = [];
+  const perim = pts => { let m = 0; for (let i = 0; i < pts.length; i++) { const a = pts[i], b = pts[(i + 1) % pts.length]; m += Math.hypot(b[0] - a[0], b[1] - a[1]); } return m / pts.length; };
+  // 1) qué caras llevan marca: de delante a atrás, para que la más frontal se
+  //    quede con la zona y las de detrás no metan ruido encima
+  const markFaces = [];
   for (let k = faces.length - 1; k >= 0; k--) {
     const fc = faces[k];
-    const isRest = restFace != null && fc.i === restFace;
-    if (settled && !isRest) continue; // dado parado: solo el número correcto, cero ruido
-    if (fc.facing <= numThresh && !isRest) continue; // cara oculta o de canto (la del resultado SIEMPRE se pinta)
-    const [fcx, fcy] = faceCenter(fc.pts);
-    if (!isRest && taken.some(q => Math.hypot(q[0] - fcx, q[1] - fcy) < R * 0.6)) continue; // zona ya ocupada por una cifra más frontal
-    taken.push([fcx, fcy]);
-    const num = faceNums[fc.i];
-    const baseSz = Math.round(W * (isRest ? 0.3 : 0.17));
-    const zAvg = fc.pts.reduce((a, p) => a + p[2], 0) / fc.pts.length;
-    const zRel = zAvg * scale / R; // z en unidades de R (normalizado por poliedro)
-    const persp = isRest ? 1 : 1 + zRel * 0.2; // corrección de perspectiva solo en giro: el número final conserva su tamaño
-    // ejes 2D de la cara: u = borde más horizontal
-    const e0 = D3.norm(D3.sub(fc.pts[1], fc.pts[0]));
-    const uAng = Math.atan2(e0[1], e0[0]);
-    const a = isRest ? 1 : Math.max(0, Math.min(1, fc.facing)); // inclinación → cifra más tenue (clamp)
-    const spinning = restFace == null; // en vuelo: la cifra gira con la cara; al posar: el resultado se lee derecho
-    ctx.save();
-    ctx.translate(fcx, fcy);
-    if (spinning || !isRest) { ctx.rotate(uAng); ctx.scale(persp, persp); }
-    ctx.font = `900 ${baseSz}px sans-serif`;
-    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    if (!dark) { ctx.fillStyle = `rgba(0,0,0,${(0.45 * a).toFixed(3)})`; ctx.fillText(num, W * 0.012, W * 0.016); } // relieve
-    ctx.fillStyle = dark ? `rgba(25,28,38,${(a).toFixed(3)})` : `rgba(255,255,255,${(a).toFixed(3)})`;
-    ctx.shadowColor = dark ? 'rgba(255,255,255,.4)' : 'rgba(0,0,0,.65)'; ctx.shadowBlur = W / 32;
-    ctx.fillText(num, 0, 0);
-    if (S.lbl && isRest) {
-      ctx.font = `800 ${Math.round(W * 0.11)}px sans-serif`;
-      ctx.fillText(S.lbl, 0, W * 0.2);
-    }
-    ctx.restore();
+    if (fc.facing <= 0.30) continue;               // caras de canto o casi: sus marcas se salían del dado
+    const isRest = settled && fc.i === restFace;
+    const c2 = faceCenter(fc.pts);
+    if (!isRest && taken.some(q => Math.hypot(q[0] - c2[0], q[1] - c2[1]) < R * 0.5)) continue; // zona ya ocupada
+    taken.push(c2);
+    markFaces.push(fc);
   }
-  ctx.shadowBlur = 0;
+  // 2) se pintan de atrás a delante: la marca cercana tapa a la lejana (pintor)
+  for (let mi = markFaces.length - 1; mi >= 0; mi--) {
+    const fc = markFaces[mi];
+    const isRest = settled && fc.i === restFace;
+    const c2 = faceCenter(fc.pts);
+    const a = isRest ? 1 : 0.45 + clamp01(fc.facing) * 0.4;
+    const num = faceNums[fc.i];
+    // TODOS los dados van con cifra grabada, el d6 incluido: es el que más se
+    // mira de cerca y el número se lee mejor que seis puntos escorados.
+    {
+      // cifra grabada: sombra de hueco + relleno; el rótulo, solo en la cara del resultado
+      const e0 = D3.norm(D3.sub(fc.pts[1], fc.pts[0]));
+      const ang = Math.atan2(e0[1], e0[0]);
+      const pe = perim(fc.pts);
+      const sz = Math.round(isRest ? Math.min(W * 0.28, pe * 0.42) : Math.min(W * 0.12, pe * 0.26));
+      const shade = Math.max(1, W / 70);
+      ctx.save();
+      ctx.translate(c2[0], c2[1]);
+      if (!isRest) ctx.rotate(ang);      // en vuelo la cifra vive en su cara; al posar se lee derecho
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.font = `900 ${sz}px sans-serif`;
+      ctx.fillStyle = dark ? `rgba(255,255,255,${(0.5 * a).toFixed(3)})` : `rgba(0,0,0,${(0.5 * a).toFixed(3)})`;
+      ctx.fillText(num, -shade * 0.5, shade * 0.5);
+      ctx.fillStyle = dark ? `rgba(26,30,42,${(0.95 * a).toFixed(3)})` : `rgba(255,255,255,${(0.95 * a).toFixed(3)})`;
+      ctx.fillText(num, 0, 0);
+      if (S.lbl && isRest) {
+        ctx.font = `800 ${Math.round(W * 0.10)}px sans-serif`;
+        ctx.fillStyle = dark ? 'rgba(26,30,42,.85)' : 'rgba(255,255,255,.9)';
+        ctx.fillText(S.lbl, 0, W * 0.22);
+      }
+      ctx.restore();
+    }
+  }
   return faces[faces.length - 1].i;
 }
 /* anima un dado 3D: gira con decay, repiquetea y posa la cara del resultado */
@@ -5949,31 +6165,35 @@ function animateDie3D(cv, faces, result, kind, lbl, big, tint) {
       let clacks = 0;
       const clackIv = instantaneo() ? 0 : setInterval(() => { if (typeof sfx !== 'undefined') sfx.clack(); if (++clacks > 7) clearInterval(clackIv); }, 110); // 4x: sin repiqueo
       const restFace = (result - 1) % geo.F.length;
+      let drop = 0;
       const frame = () => {
         let done = false;
         try {
           const el = Date.now() - t0;
+          // entra cayendo a la mesa y frena al tocar: el primer gesto del dado real
+          drop = el < 300 ? Math.pow(1 - el / 300, 2) * W * 0.5 : 0;
           if (el < SPIN) {
             w *= 0.965;
             M = D3.mMul(D3.rotAxis(axis, w * 0.016), M);
             M = D3.mMul(D3.rotAxis(axis2, w * 0.007), M); // volteo en dos ejes: el poliedro rueda, no plato giradiscos
+            S.off = [0, -drop]; S.sq = [1, 1];
             drawDie3DFrame(ctx, S, geo, M, faceNums, null, W);
           } else {
             // posa: orienta la cara del resultado al frente (nlerp corto)
             const n = D3.norm(D3.cross(D3.sub(geo.V[geo.F[restFace][1]], geo.V[geo.F[restFace][0]]), D3.sub(geo.V[geo.F[restFace][2]], geo.V[geo.F[restFace][0]])));
             const rn = D3.mVec(M, n);
-            const targ = D3.norm([rn[0], rn[1], rn[2] + 2.2]);
+            // no se queda de cara al espectador (un d4 se vería como un triángulo plano):
+            // posa LADEADO, como un dado que acaba de caer en la mesa
+            const targ = D3.norm([rn[0] + 0.62, rn[1] + 0.55, rn[2] + 2.0]);
             const ax = D3.cross(rn, targ), al = D3.len(ax);
             if (al > 0.02) M = D3.mMul(D3.rotAxis([ax[0] / al, ax[1] / al, ax[2] / al], Math.min(0.35, al)), M);
             else if (!settleT0) settleT0 = Date.now();
             const st = settleT0 ? (Date.now() - settleT0) / 170 : 0;
             done = !!settleT0 && st >= 1;
-            if (settleT0 && st < 1) { // micro-rebote al aterrizar: squash & stretch
-              const q = Math.sin(Math.min(1, st) * Math.PI) * 0.07;
-              ctx.save(); ctx.translate(W / 2, W * 0.58); ctx.scale(1 + q, 1 - q); ctx.translate(-W / 2, -W / 2);
-            }
+            // micro-rebote al aterrizar: squash & stretch, aplicado en la proyección
+            const q = settleT0 && st < 1 ? Math.sin(Math.min(1, st) * Math.PI) * 0.07 : 0;
+            S.off = [0, -drop * 0.4]; S.sq = [1 + q, 1 - q];
             drawDie3DFrame(ctx, S, geo, M, faceNums, restFace, W);
-            if (settleT0 && st < 1) ctx.restore();
           }
         } catch (e) { done = true; }
         if (done) {
@@ -6011,40 +6231,105 @@ function slotWrap(pre, battleArr, unit) {
 function shakeNode(node) { // game juice: temblor de señal (nunca rompe el flujo)
   try { if (node && node.classList) { node.classList.add('shakeit'); setTimeout(() => node.classList.remove('shakeit'), 500); } } catch (e) { dbg(e); }
 }
-/* ---- la carta atacante VUELA hasta su objetivo y vuelve (clone fixed) ---- */
-function flyAttack(fromNode, toNode, pilotCard) {
+/* ---- ATAQUE: la carta atacante se LANZA sobre su objetivo y vuelve ----
+   Antes se clonaba la carta y el clon volaba hasta el rival: parecía una
+   notificación, no un ataque. Ahora se mueve la carta REAL (el slot entero,
+   así el dado que se tira encima viaja con ella): se levanta hacia la cámara
+   con perspectiva, se inclina hacia donde golpea, crece un 10%, se queda un
+   instante encima del objetivo y vuelve a su sitio. Una flecha + un cerco
+   rojo pulsando en el objetivo dicen quién ataca a quién. */
+/* rect REAL de la carta: una carta girada deja su arte apaisado en la mitad de
+   abajo de la casilla, así que el cerco tiene que seguir al ARTE y no a la caja */
+function artRect(node) {
+  try {
+    const img = node.querySelector && node.querySelector('img');
+    const r = img && img.getBoundingClientRect ? img.getBoundingClientRect() : null;
+    return (r && r.width && r.height) ? r : node.getBoundingClientRect();
+  } catch (e) { return node.getBoundingClientRect(); }
+}
+function strikeFx(a, b, tgtNode) {
+  // flecha del atacante al objetivo (SVG fijo: no se mueve con el scroll)
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('class', 'strikefx');
+  const gid = 'sg' + (++strikeFx.n);
+  svg.innerHTML =
+    '<defs><linearGradient id="' + gid + '" x1="0" y1="0" x2="1" y2="0">' +
+    '<stop offset="0" stop-color="#FFD24A"/><stop offset="1" stop-color="#E04A3A"/></linearGradient></defs>' +
+    '<line x1="' + a[0] + '" y1="' + a[1] + '" x2="' + b[0] + '" y2="' + b[1] + '" stroke="rgba(0,0,0,.55)" stroke-width="12" stroke-linecap="round"/>' +
+    '<line x1="' + a[0] + '" y1="' + a[1] + '" x2="' + b[0] + '" y2="' + b[1] + '" stroke="url(#' + gid + ')" stroke-width="7" stroke-linecap="round"/>' +
+    '<circle cx="' + b[0] + '" cy="' + b[1] + '" r="9" fill="#FFF3C4" stroke="#E04A3A" stroke-width="3"/>';
+  document.body.appendChild(svg);
+  let ring = null;
+  if (tgtNode && tgtNode.getBoundingClientRect) {
+    const r = artRect(tgtNode);   // si el objetivo está girado, el cerco va girado
+    ring = el('div', 'striketgt');
+    ring.style.cssText = 'left:' + r.left + 'px;top:' + r.top + 'px;width:' + r.width + 'px;height:' + r.height + 'px';
+    document.body.appendChild(ring);
+  }
+  requestAnimationFrame(() => svg.classList.add('on'));
+  return () => {
+    svg.classList.remove('on');
+    setTimeout(() => { svg.remove(); if (ring) ring.remove(); }, 200);
+  };
+}
+strikeFx.n = 0;
+function flyAttack(fromNode, toNode) {
   return new Promise(res => {
+    let host = null, cleanup = null;
+    const end = () => { try { if (cleanup) cleanup(); } catch (e) {} res(); };
     try {
-      if (!fromNode || !toNode || (typeof SIM !== 'undefined' && SIM.FAST)) return res();
-      const r1 = fromNode.getBoundingClientRect(), r2 = toNode.getBoundingClientRect();
-      const d = el('div', 'flyatk');
-      const w = Math.max(60, r1.width), h = w * 1.4;
-      d.style.left = r1.left + 'px'; d.style.top = r1.top + 'px';
-      d.style.width = w + 'px';
-      const im = el('img'); im.src = fromNode.querySelector('img').src; d.appendChild(im);
-      const attackerCard = fromNode.__card || fromNode.querySelector('.card')?.__card;
-      if (attackerCard) d.appendChild(cardTextOverlay(attackerCard));
-      if (pilotCard) { const pm = el('div', 'flyatk-p'); const pi = el('img'); pi.src = cardImg(pilotCard); pm.appendChild(pi); d.appendChild(pm); }
-      document.body.appendChild(d);
-      shakeNode(toNode);
-      requestAnimationFrame(() => requestAnimationFrame(() => {
-        d.style.left = (r2.left + r2.width / 2 - w * 0.62) + 'px';
-        d.style.top = (r2.top + r2.height / 2 - h * 0.62) + 'px';
-        d.style.transform = 'scale(.62)';
-      }));
-      setTimeout(() => { d.remove(); res(); }, 330);
-    } catch (e) { res(); }
+      if (typeof SIM !== 'undefined' && SIM.FAST) return res();
+      host = fromNode && fromNode.closest ? (fromNode.closest('.slot') || fromNode) : null;
+      if (!host || !toNode || !host.getBoundingClientRect) return res();
+      const r1 = host.getBoundingClientRect(), r2 = toNode.getBoundingClientRect();
+      const c1 = [r1.left + r1.width / 2, r1.top + r1.height / 2];
+      const c2 = [r2.left + r2.width / 2, r2.top + r2.height / 2];
+      const dx0 = c2[0] - c1[0], dy0 = c2[1] - c1[1];
+      const dist = Math.hypot(dx0, dy0) || 1;
+      // se ACERCA al objetivo, no se le pega: la mesa tiene que seguir viéndose
+      const reach = Math.min(dist * 0.32, r1.width * 0.72);
+      const dx = dx0 / dist * reach, dy = dy0 / dist * reach;
+      // se inclina hacia donde golpea (rotateY si ataca a un lado, rotateX si a arriba/abajo)
+      const ry = Math.max(-16, Math.min(16, dx0 / dist * 16));
+      const rx = Math.max(-12, Math.min(12, -dy0 / dist * 12));
+      // flecha desde el borde de la carta atacante al borde del objetivo
+      const ux = dx0 / dist, uy = dy0 / dist;
+      const a = [c1[0] + ux * r1.width * 0.46, c1[1] + uy * r1.height * 0.46];
+      const b = [c2[0] - ux * r2.width * 0.44, c2[1] - uy * r2.height * 0.44];
+      cleanup = strikeFx(a, b, toNode);
+      host.classList.add('striking');
+      host.style.transition = 'transform ' + escalaMs(190) + 'ms cubic-bezier(.22,.9,.28,1)';
+      // z=45 + scale 1.045 con perspectiva 900 = la carta se ve ~10% más grande
+      // (el 3D ya agranda solo: con z=95 y scale 1.1 crecía un 26%)
+      host.style.transform =
+        'perspective(900px) translate3d(' + dx.toFixed(1) + 'px,' + dy.toFixed(1) + 'px,45px) ' +
+        'rotateY(' + ry.toFixed(1) + 'deg) rotateX(' + rx.toFixed(1) + 'deg) scale(1.045)';
+      setTimeout(() => {
+        if (!host.isConnected) return end();
+        // vuelta con un pelín de rebote (cubic-bezier >1) y a su tamaño de siempre
+        host.style.transition = 'transform ' + escalaMs(240) + 'ms cubic-bezier(.3,1.35,.55,1)';
+        host.style.transform = '';
+        setTimeout(() => {
+          host.classList.remove('striking');
+          host.style.transition = '';
+          host.style.transform = '';
+          end();
+        }, escalaMs(260));
+      }, escalaMs(230));
+    } catch (e) { end(); }
   });
 }
 function topLifeNode(pre) { return $(pre + 'Lives').querySelector('.top'); }
 function faceFrontMatrix(geo, fi) {
-  // matriz que pone la cara fi de frente (+z)
+  // matriz que pone la cara fi de frente (+z) y luego LADEA el dado ~17°: sin ese
+  // giro un d4 se ve como un triángulo plano y un d6 como un cuadrado
   const f = geo.F[fi % geo.F.length];
   const n = D3.norm(D3.cross(D3.sub(geo.V[f[1]], geo.V[f[0]]), D3.sub(geo.V[f[2]], geo.V[f[0]])));
   const up = Math.abs(n[1]) < 0.9 ? [0, 1, 0] : [1, 0, 0];
   const x = D3.norm(D3.cross(up, n));
   const y = D3.cross(n, x);
-  return [x[0], x[1], x[2], y[0], y[1], y[2], n[0], n[1], n[2]];
+  const base = [x[0], x[1], x[2], y[0], y[1], y[2], n[0], n[1], n[2]];
+  return D3.mMul(D3.mMul(D3.rotAxis([0, 1, 0], 0.30), D3.rotAxis([1, 0, 0], 0.20)), base);
 }
 function dieCanvas3D(faces, value, kind, px, lbl, tint) {
   // mini 3D estático; null si no hay canvas (fallback a div)
