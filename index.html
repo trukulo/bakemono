@@ -421,6 +421,9 @@ cambia a auto). El contenido cabe by design en 1280×720+ */
     pointer-events: none; z-index: 45; overflow: visible;
     opacity: 0; transition: opacity .14s ease; }
   .strikefx.on { opacity: 1; }
+  .strikefx .sfx-line { filter: drop-shadow(0 0 5px rgba(255,150,60,.85)); }
+  .strikefx .sfx-tip { filter: drop-shadow(0 0 9px rgba(255,215,130,.95)); }
+  .strikefx .sfx-comet { filter: drop-shadow(0 0 10px rgba(255,240,180,.95)); }
   .striketgt { position: fixed; pointer-events: none; z-index: 46; border-radius: 9px;
     box-shadow: 0 0 0 3px rgba(224,74,58,.95), 0 0 26px rgba(224,74,58,.75);
     animation: tgtPulse .55s ease-in-out infinite alternate; }
@@ -901,6 +904,28 @@ cambia a auto). El contenido cabe by design en 1280×720+ */
   .flycard img { width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 7px;
     box-shadow: 0 8px 22px rgba(0,0,0,.6); }
   .flycard .flypilot { position: absolute; inset: 0; opacity: .8; }
+  /* ---- juice de DESTRUCCIÓN: piezas sueltas sobre <body> (las mueve WAAPI) ----
+     z 140-146: por encima del tablero y de los vuelos de carta, por debajo del banner (150). */
+  .fxflash { position: fixed; inset: 0; z-index: 140; pointer-events: none; background: #fff; will-change: opacity; }
+  .fxbeam { position: fixed; z-index: 142; pointer-events: none; border-radius: 999px; will-change: transform, opacity;
+    background: linear-gradient(to top, rgba(255,255,255,.95), rgba(232,185,49,.4) 45%, rgba(232,185,49,0)); }
+  .fxshard { position: fixed; z-index: 143; pointer-events: none; border-radius: 3px; background-repeat: no-repeat;
+    will-change: transform, opacity; backface-visibility: hidden; }
+  .fxring { position: fixed; z-index: 144; border-radius: 50%; border: 3px solid #fff; pointer-events: none;
+    transform: translate(-50%,-50%) scale(.1); will-change: transform, opacity; mix-blend-mode: screen; }
+  .fxspark { position: fixed; z-index: 146; border-radius: 50%; pointer-events: none; will-change: transform, opacity; }
+  .fxcore { position: fixed; z-index: 145; border-radius: 50%; pointer-events: none; transform: translate(-50%,-50%);
+    will-change: transform, opacity; mix-blend-mode: screen; }
+  .shake.hard { animation: shakeHard .62s cubic-bezier(.36,.07,.19,.97); }
+  @keyframes shakeHard {
+    0%,100% { transform: translate(0,0) rotate(0); }
+    10% { transform: translate(-15px,9px) rotate(-.7deg); }
+    24% { transform: translate(14px,-8px) rotate(.6deg); }
+    40% { transform: translate(-11px,6px) rotate(-.5deg); }
+    58% { transform: translate(9px,-5px) rotate(.35deg); }
+    76% { transform: translate(-6px,3px) rotate(-.2deg); }
+    90% { transform: translate(3px,-2px) rotate(.1deg); }
+  }
   /* conversión en energía: clon con dos caras que se GIRA (anverso → dorso) */
   .flycard .flyflip { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; }
   .flycard .flyflip img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
@@ -2362,7 +2387,7 @@ body.chibi .card.sel::before { background: linear-gradient(180deg, #FFD9E7, var(
   <div class="box">
     <div class="langpick"><button id="langEs" title="Español"><span class="fl fl-es"></span>ES</button><button id="langEn" title="English"><span class="fl fl-en"></span>EN</button></div>
     <h1 class="klogo" aria-label="BAKEMONO"><span>BAKEMONO</span></h1>
-    <p><span data-i="menuSub">Duelo de CHAMPIONS, GODDESSES y BAKEMONO · </span><span id="menuMode"></span><span id="menuElo"></span> · <span id="buildTag" title="versión de esta copia">build 20261110-1337</span></p>
+    <p><span data-i="menuSub">Duelo de CHAMPIONS, GODDESSES y BAKEMONO · </span><span id="menuMode"></span><span id="menuElo"></span> · <span id="buildTag" title="versión de esta copia">build 20261110-1443</span></p>
     <div class="menudeco" aria-hidden="true">
       <div class="fan fan-l"><img alt=""></div>
       <div class="menubtns menustack" id="menuBtns">
@@ -4772,6 +4797,193 @@ function flyFaceDown(host, r0, card) {
     }, ms + 60);
   } catch (e) { try { host.style.visibility = ''; } catch (e2) {} }
 }
+/* ================= JUICE: DESTRUCCIÓN DE UNA UNIDAD / DE UNA VIDA =================
+   Todo son nodos sueltos sobre <body> movidos con WAAPI: no toca el modelo, no
+   altera el layout del tablero y, si algo falla, la partida sigue igual.
+   Con SIM.FAST o con «movimiento reducido» no se pinta nada. */
+function fxOn() {
+  try {
+    if (typeof SIM !== 'undefined' && SIM.FAST) return false;
+    return !(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+  } catch (e) { return false; }
+}
+function fxBox(cls, css) { const d = el('div', cls); Object.assign(d.style, css); document.body.appendChild(d); return d; }
+function fxGone(n, ms) { setTimeout(() => { try { n.remove(); } catch (e) {} }, ms); }
+function fxRun(n, frames, opts, extraMs = 120) {
+  try {
+    const a = n.animate(frames, opts);
+    a.onfinish = () => { try { n.remove(); } catch (e) {} };
+    fxGone(n, (opts.duration || 400) + (opts.delay || 0) + extraMs);
+    return a;
+  } catch (e) { try { n.remove(); } catch (e2) {} return null; }
+}
+/* onda expansiva */
+function fxRing(cx, cy, d0, d1, color, dur, w = 3) {
+  const r = fxBox('fxring', { left: cx + 'px', top: cy + 'px', width: d1 + 'px', height: d1 + 'px',
+    borderColor: color, borderWidth: w + 'px',
+    boxShadow: '0 0 ' + (w * 7) + 'px ' + (w + 1) + 'px ' + color + ', inset 0 0 ' + (w * 7) + 'px ' + color });
+  fxRun(r, [
+    { transform: 'translate(-50%,-50%) scale(' + (d0 / d1) + ')', opacity: .95, borderWidth: w + 'px' },
+    { transform: 'translate(-50%,-50%) scale(1)', opacity: 0, borderWidth: '1px' },
+  ], { duration: dur, easing: 'cubic-bezier(.1,.65,.2,1)' });
+}
+/* núcleo del impacto: disco que se abre y se apaga (lee como «¡boom!») */
+function fxCore(cx, cy, d, hot, dur = 420) {
+  const c = fxBox('fxcore', { left: cx + 'px', top: cy + 'px', width: d + 'px', height: d + 'px',
+    background: 'radial-gradient(circle, #ffffff 0%, #ffffff 16%, ' + hot + ' 46%, rgba(255,255,255,0) 74%)' });
+  fxRun(c, [
+    { transform: 'translate(-50%,-50%) scale(.22)', opacity: 1 },
+    { transform: 'translate(-50%,-50%) scale(.95)', opacity: .5, offset: .55 },
+    { transform: 'translate(-50%,-50%) scale(1.2)', opacity: 0 },
+  ], { duration: dur, easing: 'cubic-bezier(.15,.7,.3,1)' });
+}
+/* chispas radiales con gravedad */
+function fxSparks(cx, cy, n, colors, spread, size, dur = 620) {
+  for (let i = 0; i < n; i++) {
+    const ang = Math.random() * Math.PI * 2;
+    const dist = spread * (.35 + Math.random() * .95);
+    const dx = Math.cos(ang) * dist, dy = Math.sin(ang) * dist * .85;
+    const s = size * (.45 + Math.random() * .85);
+    const col = colors[(Math.random() * colors.length) | 0];
+    const p = fxBox('fxspark', { left: cx + 'px', top: cy + 'px', width: s + 'px', height: s + 'px',
+      background: col, boxShadow: '0 0 9px ' + col + ', 0 0 20px ' + col });
+    const t = dur * (.6 + Math.random() * .7);
+    fxRun(p, [
+      { transform: 'translate(-50%,-50%) scale(1)', opacity: 1 },
+      { transform: 'translate(-50%,-50%) translate(' + (dx * .78) + 'px,' + (dy * .78 - 6) + 'px) scale(.8)', opacity: .9, offset: .55 },
+      { transform: 'translate(-50%,-50%) translate(' + dx + 'px,' + (dy + 26) + 'px) scale(.12)', opacity: 0 },
+    ], { duration: t, easing: 'cubic-bezier(.12,.62,.36,1)' });
+  }
+}
+/* ascuas que suben flotando (el «humo» del destrozo) */
+function fxEmbers(cx, cy, n, colors, spread, dur = 1100) {
+  for (let i = 0; i < n; i++) {
+    const x = cx + (Math.random() - .5) * spread, y = cy + (Math.random() - .5) * spread * .5;
+    const s = 2 + Math.random() * 4.5;
+    const col = colors[(Math.random() * colors.length) | 0];
+    const p = fxBox('fxspark', { left: x + 'px', top: y + 'px', width: s + 'px', height: s + 'px',
+      background: col, boxShadow: '0 0 8px ' + col + ', 0 0 16px ' + col });
+    const t = dur * (.55 + Math.random() * .6);
+    const rise = 40 + Math.random() * 150, drift = (Math.random() - .5) * 70;
+    fxRun(p, [
+      { transform: 'translate(-50%,-50%) scale(1)', opacity: 0 },
+      { transform: 'translate(-50%,-50%) scale(1)', opacity: .9, offset: .25 },
+      { transform: 'translate(-50%,-50%) translate(' + drift + 'px,' + (-rise) + 'px) scale(.15)', opacity: 0 },
+    ], { duration: t, easing: 'cubic-bezier(.25,.5,.45,1)', delay: Math.random() * 180 });
+  }
+}
+/* la carta se rompe en esquirlas (rejilla recortada del propio arte) */
+function fxShards(rect, src, density, power, dur = 780) {
+  if (!rect || !src) return;
+  const cols = rect.width > 105 ? 4 : 3, rows = 5;
+  const w = rect.width / cols, h = rect.height / rows;
+  const cx = rect.left + rect.width / 2, cy = rect.top + rect.height / 2;
+  for (let i = 0; i < cols * rows; i++) {
+    if (Math.random() > density) continue;
+    const c = i % cols, r = (i / cols) | 0;
+    const x = rect.left + c * w, y = rect.top + r * h;
+    const sh = fxBox('fxshard', { left: x + 'px', top: y + 'px', width: w + 'px', height: h + 'px',
+      backgroundImage: 'url("' + src + '")',
+      backgroundSize: rect.width + 'px ' + rect.height + 'px',
+      backgroundPosition: (-c * w) + 'px ' + (-r * h) + 'px' });
+    const dx = (x + w / 2 - cx) * (1.5 + Math.random()) + (Math.random() - .5) * power * .45;
+    const dy = (y + h / 2 - cy) * (1.2 + Math.random()) - power * (.3 + Math.random() * .55);
+    const rot = (Math.random() - .5) * 200;
+    const t = dur * (.7 + Math.random() * .55);
+    fxRun(sh, [
+      { transform: 'translate(0,0) rotate(0deg) scale(1)', opacity: 1 },
+      { transform: 'translate(' + (dx * .55) + 'px,' + dy + 'px) rotate(' + (rot * .45) + 'deg) scale(.95)', opacity: .92, offset: .42 },
+      { transform: 'translate(' + dx + 'px,' + (dy + power * 1.1) + 'px) rotate(' + rot + 'deg) scale(.65)', opacity: 0 },
+    ], { duration: t, easing: 'cubic-bezier(.25,.5,.4,1)' });
+  }
+}
+/* UNIT MUERE: fogonazo en la carta + ondas + chispas + esquirlas.
+   Devuelve el rect original para que el clon siga volando al descarte. */
+function fxUnitDestroy(node, card) {
+  try {
+    const r = node && node.getBoundingClientRect ? node.getBoundingClientRect() : null;
+    if (!r || !r.width || !fxOn()) return r;
+    const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+    const src = (node.querySelector && node.querySelector('img') || {}).src || (card ? cardImg(card) : '');
+    const rr = Math.max(r.width, r.height);
+    node.animate([
+      { filter: 'brightness(1) saturate(1)', opacity: 1, transform: 'scale(1)' },
+      { filter: 'brightness(3) saturate(.25) contrast(1.3)', opacity: 1, transform: 'scale(1.1)', offset: .2 },
+      { filter: 'brightness(1.35) saturate(.1) contrast(1.5)', opacity: .85, transform: 'scale(1.04)', offset: .55 },
+      { filter: 'brightness(.5) saturate(0) blur(4px)', opacity: 0, transform: 'scale(.86)' },
+    ], { duration: 430, easing: 'cubic-bezier(.3,.6,.4,1)', fill: 'forwards' });
+    fxCore(cx, cy, rr * 1.5, '#FFC773', 340);
+    fxRing(cx, cy, 10, rr * 2, 'rgba(255,255,255,.95)', 520, 5);
+    fxRing(cx, cy, 6, rr * 1.25, 'rgba(255,150,90,.9)', 360, 2);
+    fxSparks(cx, cy, 12, ['#FFF3C4', '#FFC773', '#FF8A5C', '#ffffff'], rr * .95, 8, 600);
+    fxEmbers(cx, cy, 4, ['#FFD479', '#FF8A5C'], rr * .8, 900);
+    if (src) setTimeout(() => fxShards(r, src, .6, 130, 700), 90);
+    sfx.thud();
+    return r;
+  } catch (e) { return null; }
+}
+/* VIDA DESTRUIDA: el golpe más gordo del juego (fogonazo de pantalla, temblor
+   duro, haz de luz, tres ondas, 60+ chispas, ascuas y la carta hecha añicos). */
+function fxLifeDestroy(rect, src, mine) {
+  try {
+    if (!rect || !rect.width || !fxOn()) return;
+    const hot = mine ? '#FF5A44' : '#FFD35C';
+    const warm = mine ? ['#FF6A55', '#FFA184', '#FFD9C2', '#ffffff'] : ['#FFE08A', '#FFC02E', '#FFF3C4', '#ffffff'];
+    const big = Math.max(innerWidth, innerHeight);
+    const small = Math.min(innerWidth, innerHeight);
+    const x0 = rect.left + rect.width / 2, y0 = rect.top + rect.height / 2;
+    // el golpe se ve en el centro de la mesa, no en la esquina donde vive la vida
+    const cx = innerWidth / 2, cy = innerHeight * .44;
+    const w2 = rect.width * 1.9, h2 = rect.height * 1.9;
+    const stage = { left: cx - w2 / 2, top: cy - h2 / 2, width: w2, height: h2 };
+    const arrive = 300;
+    sfx.flip();
+    // 1) la vida arrancada vuela al centro, creciendo y sobrexponiéndose
+    if (src) {
+      const ghost = fxBox('fxshard', { left: rect.left + 'px', top: rect.top + 'px',
+        width: rect.width + 'px', height: rect.height + 'px', borderRadius: '8px',
+        backgroundImage: 'url("' + src + '")', backgroundSize: rect.width + 'px ' + rect.height + 'px',
+        boxShadow: '0 0 30px ' + hot + ', 0 0 80px rgba(255,255,255,.6)' });
+      const dx = cx - x0, dy = cy - y0;
+      fxRun(ghost, [
+        { transform: 'translate(0,0) scale(1) rotate(0deg)', opacity: 1, filter: 'brightness(1)' },
+        { transform: 'translate(' + (dx * .6) + 'px,' + (dy * .6) + 'px) scale(1.55) rotate(-4deg)', opacity: 1, filter: 'brightness(1.8) saturate(.7)', offset: .6 },
+        { transform: 'translate(' + dx + 'px,' + dy + 'px) scale(2.1) rotate(2deg)', opacity: 1, filter: 'brightness(3) saturate(.3)', offset: .9 },
+        { transform: 'translate(' + dx + 'px,' + (dy - 10) + 'px) scale(2.25) rotate(3deg)', opacity: 0, filter: 'brightness(5) saturate(0) blur(7px)' },
+      ], { duration: 780, easing: 'cubic-bezier(.3,.75,.35,1)' }, 120);
+    }
+    // 2) al llegar al centro: el estallido de verdad
+    setTimeout(() => {
+      const fl = fxBox('fxflash', {});
+      fxRun(fl, [{ opacity: 0 }, { opacity: .95, offset: .05 }, { opacity: .3, offset: .2 },
+        { opacity: .5, offset: .32 }, { opacity: 0, offset: .66 }],
+        { duration: 580, easing: 'cubic-bezier(.2,.6,.3,1)' }, 60);
+      fxCore(cx, cy, small * .68, hot, 560);
+      fxCore(cx, cy, small * .34, '#ffffff', 320);
+      fxRing(cx, cy, 14, big * .72, 'rgba(255,255,255,.95)', 760, 9);
+      fxRing(cx, cy, 9, big * .44, hot, 600, 6);
+      fxRing(cx, cy, 5, small * .55, 'rgba(255,255,255,.85)', 430, 3);
+      const beam = fxBox('fxbeam', { left: (cx - 34) + 'px', top: (cy - innerHeight * .62) + 'px',
+        width: '68px', height: (innerHeight * 1.1) + 'px', filter: 'blur(3px)' });
+      fxRun(beam, [
+        { transform: 'scaleY(.08) scaleX(.35)', opacity: 0 },
+        { transform: 'scaleY(.85) scaleX(1)', opacity: .95, offset: .3 },
+        { transform: 'scaleY(1.15) scaleX(.5)', opacity: 0 },
+      ], { duration: 820, easing: 'cubic-bezier(.2,.7,.3,1)' }, 80);
+      fxSparks(cx, cy, 34, warm, big * .3, 12, 950);
+      fxSparks(cx, cy, 14, ['#ffffff', '#FFF6D8'], small * .26, 16, 600);
+      fxEmbers(cx, cy, 14, warm, small * .4, 1600);
+      if (src) fxShards(stage, src, .8, 260, 1100);
+      const t = $('table');
+      if (t) {
+        t.classList.remove('shake', 'hard'); void t.offsetWidth; t.classList.add('shake', 'hard');
+        setTimeout(() => { t.classList.remove('hard'); setTimeout(() => t.classList.remove('shake'), 60); }, 700);
+      }
+      sfx.thud(); sfx.hit();
+    }, arrive);
+  } catch (e) { /* el adorno nunca puede romper la partida */ }
+}
+
 function handRectOf(P) { // rect aproximado de la mano de P (para descartes HEX)
   const fan = $(P === G.O ? 'oppHandFan' : 'myHand');
   const r = fan.getBoundingClientRect();
@@ -6304,16 +6516,32 @@ function artRect(node) {
   } catch (e) { return node.getBoundingClientRect(); }
 }
 function strikeFx(a, b, tgtNode) {
-  // flecha del atacante al objetivo (SVG fijo: no se mueve con el scroll)
+  // FLECHA de ataque: el trazo CRECE desde la carta atacante hasta el objetivo,
+  // con la punta viajando por delante y un cometa que la remata. SVG fijo (no se
+  // mueve con el scroll). El trazo (stroke-dashoffset) y la punta (translate)
+  // comparten duración y curva, así que la punta va siempre en el extremo.
   const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
   svg.setAttribute('class', 'strikefx');
   const gid = 'sg' + (++strikeFx.n);
+  const ax = a[0], ay = a[1], bx = b[0], by = b[1];
+  const dx = bx - ax, dy = by - ay;
+  const L = Math.max(1, Math.hypot(dx, dy));
+  const ang = Math.atan2(dy, dx) * 180 / Math.PI;
+  const seg = (stroke, w, extra) => '<line class="sfx-line" x1="' + ax + '" y1="' + ay +
+    '" x2="' + bx + '" y2="' + by + '" stroke="' + stroke + '" stroke-width="' + w +
+    '" stroke-linecap="round" stroke-dasharray="' + L + '" stroke-dashoffset="' + L + '"' + (extra || '') + '/>';
   svg.innerHTML =
     '<defs><linearGradient id="' + gid + '" x1="0" y1="0" x2="1" y2="0">' +
-    '<stop offset="0" stop-color="#FFD24A"/><stop offset="1" stop-color="#E04A3A"/></linearGradient></defs>' +
-    '<line x1="' + a[0] + '" y1="' + a[1] + '" x2="' + b[0] + '" y2="' + b[1] + '" stroke="rgba(0,0,0,.55)" stroke-width="12" stroke-linecap="round"/>' +
-    '<line x1="' + a[0] + '" y1="' + a[1] + '" x2="' + b[0] + '" y2="' + b[1] + '" stroke="url(#' + gid + ')" stroke-width="7" stroke-linecap="round"/>' +
-    '<circle cx="' + b[0] + '" cy="' + b[1] + '" r="9" fill="#FFF3C4" stroke="#E04A3A" stroke-width="3"/>';
+    '<stop offset="0" stop-color="#FFD24A"/><stop offset=".7" stop-color="#FF9A3C"/>' +
+    '<stop offset="1" stop-color="#E04A3A"/></linearGradient></defs>' +
+    seg('rgba(0,0,0,.55)', 13) +          // sombra: da volumen al trazo
+    seg('url(#' + gid + ')', 8) +          // trazo principal
+    seg('rgba(255,255,255,.85)', 2.5) +    // brillo interior
+    '<g transform="translate(' + ax + ',' + ay + ') rotate(' + ang + ')">' +
+    '<g class="sfx-tip"><path d="M0 0 L-26 -12 L-16 0 L-26 12 Z" fill="#FFF3C4" stroke="#E04A3A" ' +
+    'stroke-width="2.5" stroke-linejoin="round"/></g></g>' +
+    '<g class="sfx-comet"><circle cx="' + ax + '" cy="' + ay + '" r="6" fill="#FFF6D8" ' +
+    'stroke="#FF9A3C" stroke-width="2"/></g>';
   document.body.appendChild(svg);
   let ring = null;
   if (tgtNode && tgtNode.getBoundingClientRect) {
@@ -6322,7 +6550,27 @@ function strikeFx(a, b, tgtNode) {
     ring.style.cssText = 'left:' + r.left + 'px;top:' + r.top + 'px;width:' + r.width + 'px;height:' + r.height + 'px';
     document.body.appendChild(ring);
   }
+  const lines = [...svg.querySelectorAll('.sfx-line')];
+  const tip = svg.querySelector('.sfx-tip');
+  const comet = svg.querySelector('.sfx-comet');
+  const grow = escalaMs(240), ease = 'cubic-bezier(.18,.85,.3,1)';
   requestAnimationFrame(() => svg.classList.add('on'));
+  if (fxOn()) {
+    lines.forEach(ln => ln.animate([{ strokeDashoffset: L }, { strokeDashoffset: 0 }],
+      { duration: grow, easing: ease, fill: 'forwards' }));
+    if (tip) tip.animate([{ transform: 'translate(0px,0px)' }, { transform: 'translate(' + L + 'px,0px)' }],
+      { duration: grow, easing: ease, fill: 'forwards' });
+    if (comet) comet.animate([
+      { transform: 'translate(0px,0px)', opacity: 0 },
+      { opacity: 1, offset: .14 },
+      { opacity: .95, offset: .82 },
+      { transform: 'translate(' + (dx * .97) + 'px,' + (dy * .97) + 'px)', opacity: 0 },
+    ], { duration: grow + 110, easing: 'cubic-bezier(.32,.72,.45,1)', fill: 'forwards' });
+  } else { // movimiento reducido: flecha completa y quieta, sin animación
+    lines.forEach(ln => ln.setAttribute('stroke-dashoffset', '0'));
+    if (tip) tip.setAttribute('transform', 'translate(' + L + ',0)');
+    if (comet) comet.setAttribute('opacity', '0');
+  }
   return () => {
     svg.classList.remove('on');
     setTimeout(() => { svg.remove(); if (ring) ring.remove(); }, 200);
@@ -6349,9 +6597,16 @@ function flyAttack(fromNode, toNode) {
       const ry = Math.max(-16, Math.min(16, dx0 / dist * 16));
       const rx = Math.max(-12, Math.min(12, -dy0 / dist * 12));
       // flecha desde el borde de la carta atacante al borde del objetivo
+      // la flecha va del BORDE del arte del atacante al BORDE del arte del
+      // objetivo: con una carta girada la caja es mayor que el arte y la línea
+      // la cruzaba por encima
       const ux = dx0 / dist, uy = dy0 / dist;
-      const a = [c1[0] + ux * r1.width * 0.46, c1[1] + uy * r1.height * 0.46];
-      const b = [c2[0] - ux * r2.width * 0.44, c2[1] - uy * r2.height * 0.44];
+      const ra = fromNode ? artRect(fromNode) : r1;
+      const rb = toNode ? artRect(toNode) : r2;
+      const halfA = Math.abs(ux) * ra.width / 2 + Math.abs(uy) * ra.height / 2;
+      const halfB = Math.abs(ux) * rb.width / 2 + Math.abs(uy) * rb.height / 2;
+      const a = [ra.left + ra.width / 2 + ux * (halfA + 7), ra.top + ra.height / 2 + uy * (halfA + 7)];
+      const b = [rb.left + rb.width / 2 - ux * (halfB + 3), rb.top + rb.height / 2 - uy * (halfB + 3)];
       cleanup = strikeFx(a, b, toNode);
       host.classList.add('striking');
       host.style.transition = 'transform ' + escalaMs(190) + 'ms cubic-bezier(.22,.9,.28,1)';
@@ -6811,8 +7066,12 @@ async function resolveUnitCombat(attacker, attackerP, aDet, target, defenderP, r
     // quien defiende. 'meet': igualar o superar también descarta.
     if (beats(aVal, dVal)) {
       target.dead = true;
+      // DESTRUCCIÓN: la carta se sobrexpone, revienta en esquirlas y solo después
+      // sale volando al descarte (el rect se captura antes de romperse)
+      const deadRect = fxUnitDestroy(tgtNode, target.card);
+      await sleep(300);
       if (tgtNode) { tgtNode.classList.add('dmg'); shakeNode(tgtNode); }
-      toDiscard(defenderP, target.card, target.pilot, slotCard(defenderP === G.O ? 'opp' : 'my', defenderP.battle, target));
+      toDiscard(defenderP, target.card, target.pilot, deadRect || slotCard(defenderP === G.O ? 'opp' : 'my', defenderP.battle, target));
       defenderP.battle = defenderP.battle.filter(x => x !== target);
       statOf().kills[attackerP === G.P ? 'P' : 'O']++;
       sfx.hit();
@@ -6935,14 +7194,26 @@ function destroyLife(P, attackerPlayer, attackerName, dieLabel, roll, aVal) {
   if (!canAttackLives(P)) return false;
   const l = P.lives.find(l => l.lifeCard);
   if (!l) return false;
+  // JUICE: la vida que cae se lleva el efecto más gordo del juego. Se lanza ANTES
+  // del cambio de modelo (necesita el rect de la carta) y el nodo original se
+  // oculta para que no se vea duplicado mientras estalla el clon.
+  try {
+    const lifeNode = $(P === G.P ? 'myLives' : 'oppLives')?.querySelector('.life.top');
+    if (lifeNode) {
+      const srcOf = (lifeNode.querySelector('img') || {}).src || img('back');
+      const rect = lifeNode.getBoundingClientRect();
+      lifeNode.style.visibility = 'hidden';
+      fxLifeDestroy(rect, srcOf, P === G.P);
+    }
+  } catch (e) { /* el adorno nunca puede romper la partida */ }
   // Carta premio: a la mesa del que pierde la vida si es unidad y cabe; una
   // DIOSA se monta si hay CAMPEONA libre. Si no se puede jugar, a la mano.
   const toTable = sendPrizeCard(P, l.lifeCard);
   l.lifeCard = null; P.lifeLostThisTurn = true;
   statOf().lives[P === G.P ? 'P' : 'O']++;
   if (!(typeof SIM !== 'undefined' && SIM.FAST)) {
-    sfx.hit(); flash(P === G.P ? 'rgba(224,74,58,.5)' : 'rgba(232,185,49,.4)');
-    if (P === G.P) { shake(); }
+    // con el efecto grande apagado (movimiento reducido) queda el aviso de siempre
+    if (!fxOn()) { sfx.hit(); flash(P === G.P ? 'rgba(224,74,58,.5)' : 'rgba(232,185,49,.4)'); if (P === G.P) shake(); }
     showLivesLeft(P);
   }
   const logKey = toTable ? 'lifeGoneLogTable' : 'lifeGoneLogHand';
