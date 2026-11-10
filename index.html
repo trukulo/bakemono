@@ -2387,7 +2387,7 @@ body.chibi .card.sel::before { background: linear-gradient(180deg, #FFD9E7, var(
   <div class="box">
     <div class="langpick"><button id="langEs" title="Español"><span class="fl fl-es"></span>ES</button><button id="langEn" title="English"><span class="fl fl-en"></span>EN</button></div>
     <h1 class="klogo" aria-label="BAKEMONO"><span>BAKEMONO</span></h1>
-    <p><span data-i="menuSub">Duelo de CHAMPIONS, GODDESSES y BAKEMONO · </span><span id="menuMode"></span><span id="menuElo"></span> · <span id="buildTag" title="versión de esta copia">build 20261110-1443</span></p>
+    <p><span data-i="menuSub">Duelo de CHAMPIONS, GODDESSES y BAKEMONO · </span><span id="menuMode"></span><span id="menuElo"></span> · <span id="buildTag" title="versión de esta copia">build 20261110-1855</span></p>
     <div class="menudeco" aria-hidden="true">
       <div class="fan fan-l"><img alt=""></div>
       <div class="menubtns menustack" id="menuBtns">
@@ -3093,6 +3093,9 @@ const I18N = {
     altPass: 'Pasar (sin ataques pendientes)',
     altPassLog: 'Has pasado: el rival ataca si puede.',
     altRoundLog: 'Ronda {n} · ambos roban y colocan energía.',
+    specTurnLog: 'Turno {n} · {p}',
+    specDrawLog: '📥 {p} roba {n}: {cards} · energía: {e}',
+    specNoCards: 'nada',
     specHint: '👀 Espectador: {a} (arriba) vs {b} (abajo)',
     lastTurnTag: ' · ⚠ último turno', lifeDef: 'Vida (defiende con {d})', lifeGone: 'Perdida',
     lifeT: 'girada', lifeR: 'preparada', energyT: 'Energía',
@@ -3503,6 +3506,9 @@ tut: [
     altPass: 'Pass (no attacks left)',
     altPassLog: 'You passed: the opponent attacks if they can.',
     altRoundLog: 'Round {n} · both draw and place energy.',
+    specTurnLog: 'Turn {n} · {p}',
+    specDrawLog: '📥 {p} draws {n}: {cards} · energy: {e}',
+    specNoCards: 'nothing',
     specHint: '👀 Spectating: {a} (top) vs {b} (bottom)',
     lastTurnTag: ' · ⚠ last turn', lifeDef: 'Life (defends with {d})', lifeGone: 'Lost',
     lifeT: 'tapped', lifeR: 'ready', energyT: 'Energy',
@@ -4268,7 +4274,12 @@ function noiseBurst(dur = .12, vol = .1, freq = 1200, delay = 0) {
   } catch (e) { /* sin audio */ }
 }
 const sfx = {
-  deploy: () => beep(320, .1), energy: () => beep(520, .07, 'sine'),
+  deploy: () => beep(320, .1), energy: () => beep(560, .06, 'sine', .055),
+  // sonidos de tablero que faltaban: todos por DEBAJO del golpe de vida, que
+  // sigue siendo el único fuerte del juego
+  discard: () => { noiseBurst(.1, .06, 1700); beep(300, .06, 'sine', .045, (50) / 1000); },
+  crush: () => { noiseBurst(.15, .09, 380); beep(160, .18, 'sine', .085, (15) / 1000); beep(95, .24, 'sine', .07, (95) / 1000); },
+  block: () => { noiseBurst(.05, .05, 2700); beep(430, .06, 'triangle', .045); },
   click: () => beep(700, .05, 'square', .07),
   clack: () => noiseBurst(.05, .07, 3200),
   thud: () => { noiseBurst(.12, .14, 300); beep(120, .12, 'sine', .12, (40) / 1000); },
@@ -4482,7 +4493,12 @@ const OPENING_HAND = 4;
 const giveInitiativeDraw = P => { const c = drawFromDeck(P); if (c) P.hand.push(c); return c; };
 const giveStartingEnergy = (P, n) => {
   let k = 0;
-  for (let i = 0; i < n; i++) { const c = drawFromDeck(P); if (!c) break; P.eTable.push({ card: c, tapped: false }); k++; }
+  for (let i = 0; i < n; i++) {
+    const c = drawFromDeck(P); if (!c) break;
+    P.eTable.push({ card: c, tapped: false });
+    try { sfx.energy(); } catch (e) {}   // la energía inicial también se oye al posarse
+    k++;
+  }
   return k;
 };
 // Energía inicial: el primer jugador recibe lo elegido en Ajustes y el otro 2.
@@ -4661,6 +4677,7 @@ function triggerInherit(ownerP, foeP, dead) {
   return true;
 }
 function toDiscard(P, card, pilot, srcNode) {
+  try { sfx.discard(); } catch (e) {}   // la carta roza la mesa al caer al descarte
   if (pilot) P.discard.push(pilot);
   P.discard.push(card);
   flyToDiscard(card, P, srcNode, pilot); // la carta "vuela" hasta el descarte
@@ -4918,7 +4935,8 @@ function fxUnitDestroy(node, card) {
     fxSparks(cx, cy, 12, ['#FFF3C4', '#FFC773', '#FF8A5C', '#ffffff'], rr * .95, 8, 600);
     fxEmbers(cx, cy, 4, ['#FFD479', '#FF8A5C'], rr * .8, 900);
     if (src) setTimeout(() => fxShards(r, src, .6, 130, 700), 90);
-    sfx.thud();
+    // el sonido lo pone quien la destruye (sfx.crush en el combate): aquí solo
+    // sonaría dos veces y con el golpe de una vida
     return r;
   } catch (e) { return null; }
 }
@@ -5314,6 +5332,7 @@ function putAsEnergy(P, card, srcNode) {
   // se coloca AGOTADA: despierta al empezar tu siguiente turno
   P.eTable.push({ card, tapped: true });
   noteMove(card, fromNode, 'energy');   // vuela y se gira para quedar boca abajo
+  try { sfx.energy(); } catch (e) {}
   try { shakeNode($(P === G.O ? 'opp' : 'my') + 'Energy'); } catch (e) {}
   return true;
 }
@@ -5368,14 +5387,30 @@ function cpuDeployStyle(pid) {
 }
 function cpuGainEnergy(P, pid) {
   const n = drawN(P, SETTINGS.draw);
+  // en CPU vs CPU nadie ve la mano: se apunta lo robado para contarlo en el registro
+  const robadas = n ? P.hand.slice(-n).map(c => c.name) : [];
+  const puestas = [];
   let placed = 0, quota = cpuEnergyTarget(P, pid);
   while (placed < quota && P.hand.length) {
     const c = cpuEnergyPick(P);
     if (!c) break;
+    const nombre = c.name;
     if (!putAsEnergy(P, c)) break;   // agotada: disponible el turno siguiente
+    puestas.push(nombre);
     placed++;
   }
+  if (G && G.spec) logSpecDraws(P, robadas, puestas);
   return n;
+}
+/* resumen del arranque de turno en espectador: nada de esto se veía, la mano
+   era invisible y las energías aparecían boca abajo sin decir cuáles eran */
+function logSpecDraws(P, robadas, puestas) {
+  try {
+    const lista = a => (a.length ? a.join(', ') : T('specNoCards'));
+    logLine(fmtT(T('specDrawLog'), {
+      p: P.name, n: robadas.length, cards: lista(robadas), e: lista(puestas),
+    }), 'dim');
+  } catch (e) { /* el registro nunca puede romper el turno */ }
 }
 // COSTE de los poderes CHARGED / SUPERCHARGED: robo directo del mazo, boca abajo
 function drawAsEnergy(P, n) {
@@ -5385,6 +5420,7 @@ function drawAsEnergy(P, n) {
   while (k < n && energySlotFree(P)) {
     const c = drawFromDeck(P); if (!c) break;
     P.eTable.push({ card: c, tapped: true });
+    try { sfx.energy(); } catch (e) {}
     noteMove(c, pileRect(P, 'Deck'), 'energy');   // del mazo a la reserva, girándose
     k++;
   }
@@ -5551,6 +5587,7 @@ async function maybeReroll(det, owner, cardName, st) {
   const suggested = rerollRecommended(det);
   const yes = (owner === G.P && !G.spec && !G.auto) ? await askReroll(cardName, st, det) : suggested;
   if (yes) {
+    try { sfx.dice(); } catch (e) {}   // los dados nuevos de la repetición
     rerollCombinedD(det);
     statOf().rerolls[owner === G.P ? 'P' : 'O']++;
     logLine(fmtT(T('rerollLog'), { c: cardName, v: det.kept }));
@@ -6771,6 +6808,7 @@ function startSpecMatch() {
   const _arrancaP = a > b;
   const alt = G.turnsMode === 'alternate';
   if (typeof SIM !== 'undefined' && SIM.FAST) { giveInitiativeDraw(_arrancaP ? G.P : G.O); giveStartingEnergy(G.P, _arrancaP ? 2 : 1); giveStartingEnergy(G.O, _arrancaP ? 1 : 2); if (alt) startAltRound(!_arrancaP); else specLoop(a > b); return; } // simulación: sin sorteo visual ni espera
+  try { sfx.dice(); } catch (e) {}   // el sorteo 1d12 también se oye
   showDrawDice(a, b, G.O.name, G.P.name, tintOf({ faction: G.O.facs?.[0] }), tintOf({ faction: G.P.facs?.[0] }));
   laterG(() => { const _a = a > b; giveInitiativeDraw(_a ? G.P : G.O); giveStartingEnergy(G.P, _a ? 2 : 1); giveStartingEnergy(G.O, _a ? 1 : 2); if (alt) startAltRound(!_a); else specLoop(a > b); }, escalaMs(1300)); // deja leer el sorteo (escalado)
 }
@@ -7074,7 +7112,7 @@ async function resolveUnitCombat(attacker, attackerP, aDet, target, defenderP, r
       toDiscard(defenderP, target.card, target.pilot, deadRect || slotCard(defenderP === G.O ? 'opp' : 'my', defenderP.battle, target));
       defenderP.battle = defenderP.battle.filter(x => x !== target);
       statOf().kills[attackerP === G.P ? 'P' : 'O']++;
-      sfx.hit();
+      sfx.crush();   // la carta revienta: impacto grave, por debajo del de una vida
       logLine('�s" ' + unitLabel(attacker) + ' ' + aVal + T('vsLbl') + unitLabel(target) + ' ' + dVal + T('discarded'), defenderP === G.P ? 'bad' : 'hl');
       await triggerRevenge(defenderP, target, attackerP, tgtNode);
       triggerInherit(defenderP, attackerP, target); // HERENCIA: baja en su lugar otra carta de la mano
@@ -7082,6 +7120,7 @@ async function resolveUnitCombat(attacker, attackerP, aDet, target, defenderP, r
       markDamage(target);
     } else {
       if (tgtNode) { tgtNode.classList.add('dmg'); shakeNode(tgtNode); }
+      sfx.block();   // aguantó el golpe: seco y corto, no suena a victoria
       logLine('⚔ ' + unitLabel(attacker) + ' ' + aVal + T('vsLbl') + unitLabel(target) + ' ' + dVal + T('held'), defenderP === G.P ? 'good' : '');
     }
   } finally {
@@ -7273,6 +7312,11 @@ async function aiTurnFor(att, dfn, pid, opts = {}) { // pid = personalidad del q
     isLast = P.pending; P.pending = false; // si entraba a 0: ESTE es su último turno
     G.phase = 'aiTurn'; render();
     sfx.turn();
+    if (G.spec) {   // CPU vs CPU: se anuncia el turno nuevo, que antes no se veía
+      const linea = fmtT(T('specTurnLog'), { n: G.turn, p: P.name });
+      logLine('— ' + linea + ' —', 'hl');
+      banner(linea, side === 'O');
+    }
   } else {
     G.phase = 'altTurn'; render();
   }
@@ -7767,6 +7811,7 @@ $('btnKeep').onclick = () => {
     if (a > b) { giveInitiativeDraw(G.O); startMyTurn(); } else { giveInitiativeDraw(G.P); aiTurn(); }
     return;
   }
+  try { sfx.dice(); } catch (e) {}   // sorteo de iniciativa: que rueden los dados con sonido
   showDrawDice(a, b, T('youName'), G.O.name, tintOf({ faction: G.P.facs?.[0] }), tintOf({ faction: G.O.facs?.[0] }));
   laterG(() => { // deja leer el sorteo antes de repartir el primer turno
     giveOpeningEnergy(a > b);
