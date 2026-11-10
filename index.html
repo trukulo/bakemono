@@ -1528,6 +1528,12 @@ button:disabled { filter: grayscale(.25); }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+  /* Con el movimiento desactivado (Windows: «Mostrar animaciones» apagado, común en
+     equipos modestos) las piezas que nacen y mueren POR animación saltaban al último
+     fotograma: la tirada se quedaba en opacity 0 y la mesa parecía no tirar dados. Aquí
+     se quedan quietas pero VISIBLES; las retira el JS como siempre. */
+  .diefloatwrap, .floattxt { animation: none !important; opacity: 1; }
+  .die.rolling { animation: none !important; }
 }
 
 .cpu-watch-page { z-index: var(--z-page); }
@@ -2356,7 +2362,7 @@ body.chibi .card.sel::before { background: linear-gradient(180deg, #FFD9E7, var(
   <div class="box">
     <div class="langpick"><button id="langEs" title="Español"><span class="fl fl-es"></span>ES</button><button id="langEn" title="English"><span class="fl fl-en"></span>EN</button></div>
     <h1 class="klogo" aria-label="BAKEMONO"><span>BAKEMONO</span></h1>
-    <p><span data-i="menuSub">Duelo de CHAMPIONS, GODDESSES y BAKEMONO · </span><span id="menuMode"></span><span id="menuElo"></span> · <span id="buildTag" title="versión de esta copia">build 20261110-1303</span></p>
+    <p><span data-i="menuSub">Duelo de CHAMPIONS, GODDESSES y BAKEMONO · </span><span id="menuMode"></span><span id="menuElo"></span> · <span id="buildTag" title="versión de esta copia">build 20261110-1337</span></p>
     <div class="menudeco" aria-hidden="true">
       <div class="fan fan-l"><img alt=""></div>
       <div class="menubtns menustack" id="menuBtns">
